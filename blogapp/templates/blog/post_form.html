@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Update Post{% else %}Create Post{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <!-- TITLE -->
+                <h3 class="mb-4 text-center">
+                    {% if object %}
+                        ✏️ Update Post
+                    {% else %}
+                        ➕ Create New Post
+                    {% endif %}
+                </h3>
+
+                <!-- FORM -->
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- TITLE FIELD -->
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        {{ form.title }}
+                    </div>
+
+                    <!-- CONTENT FIELD -->
+                    <div class="mb-3">
+                        <label class="form-label">Content</label>
+                        {{ form.content }}
+                    </div>
+
+                    <!-- CATEGORY FIELD -->
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        {{ form.category }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Image</label>
+                        {{ form.image }}
+                    </div>
+
+                    <!-- ERRORS -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                    <!-- BUTTONS -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'post_list' %}" class="btn btn-secondary">
+                            ← Back
+                        </a>
+
+                        <button type="submit" class="btn btn-success">
+                            💾 Save
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

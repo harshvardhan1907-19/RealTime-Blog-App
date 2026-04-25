@@ -1,0 +1,151 @@
+/* ============================================
+   NOTIFICATION STYLES - SIMPLE VERSION
+   ============================================ */
+
+/* Wrapper */
+#wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Bell link styling */
+#wrapper a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1.3rem;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+#wrapper a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Notification badge */
+#notif-count {
+    position: absolute;
+    top: 1px;
+    right: -8px;
+    background: #dc3545;
+    color: white !important;
+    font-size: 0.65rem;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px #212529;
+}
+
+/* Dropdown box */
+#notif-box {
+    display: none;
+    position: absolute;
+    right: -30px;
+    top: 40px;
+    width: 320px;
+    background: white;
+    /* margin-top: 8px; */
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    border: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+/* Dropdown arrow */
+#notif-box::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
+
+/* Notification items */
+#notif-box p {
+    padding: 12px 15px;
+    margin: 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Each notification item */
+#notif-box a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+    border-radius: 0;
+    padding: 0;
+}
+
+#notif-box a:hover {
+    background: #f8f9fa;
+}
+
+#notif-box a>div {
+    padding: 12px 15px;
+}
+
+/* Unread notification style */
+#notif-box a:has(div[style*="background"]) {
+    background: #f0f7ff;
+}
+
+/* Notification text */
+#notif-box div div {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+#notif-box small {
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+/* Loading state */
+#notif-box p:only-child {
+    text-align: center;
+    color: #6c757d;
+    padding: 30px;
+}
+
+/* Animation for badge */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    #notif-box {
+        width: 280px;
+        right: -50px;
+    }
+
+    #notif-box::before {
+        right: 60px;
+    }
+}

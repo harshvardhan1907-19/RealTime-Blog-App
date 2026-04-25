@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Blog App{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-light">
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'post_list' %}">📝 BlogApp</a>
+
+            <div class="d-flex align-items-center gap-3">
+                <!-- CREATE POST -->
+                <a href="{% url 'post_create' %}" class="btn btn-success btn-sm px-3">
+                    ✍️ Create Post
+                </a>
+
+                <!-- PROFILE -->
+                <a href="{% url 'profile' %}" class="btn btn-info btn-sm px-3">
+                    👤 Profile
+                </a>
+
+                <!-- 🔔 NOTIFICATIONS -->
+                {% if request.user.is_authenticated %}
+                <div class="notification-wrapper" id="wrapper">
+                    <a href="{% url 'notifications' %}" class="notification-bell-link" id="notificationBellLink">
+                        🔔
+                        <span id="notif-count" class="notification-badge">0</span>
+                    </a>
+                    
+                    <div id="notif-box" class="notification-dropdown">
+                        <div class="notification-header">
+                            <span>📬 Notifications</span>
+                        </div>
+                        <div id="notif-list">
+                            <div class="notification-loading">
+                                <div class="spinner"></div>
+                                <span>Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Link to your existing notification.js -->
+    <script src="{% static 'js/notification.js' %}"></script>
+
+    {% block js %}{% endblock %}
+
+</body>
+
+</html>

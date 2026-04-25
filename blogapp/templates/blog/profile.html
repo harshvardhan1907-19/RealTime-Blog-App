@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+    <!-- LEFT SIDE: USER INFO -->
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4 border-0 text-center" style="border-radius:12px;">
+            <div class="card-body">
+
+                <!-- USER AVATAR (placeholder for now) -->
+                <div class="mb-3">
+                    <div style="
+                        width:80px;
+                        height:80px;
+                        background:#eee;
+                        border-radius:50%;
+                        margin:auto;
+                    "></div>
+                </div>
+
+                <!-- USERNAME -->
+                <h4 class="fw-semibold">{{ user.username }}</h4>
+
+                <hr>
+
+                <!-- STATS -->
+                <div class="d-flex justify-content-around">
+                    <div>
+                        <div class="fw-bold">{{ total_posts }}</div>
+                        <small class="text-muted">Posts</small>
+                    </div>
+                    <div>
+                        <div class="fw-bold">{{ total_likes }}</div>
+                        <small class="text-muted">Likes</small>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="col-md-8">
+
+        <!-- USER POSTS -->
+        <div class="card shadow-sm mb-4 border-0" style="border-radius:12px;">
+            <div class="card-body">
+                <h5 class="mb-3 fw-semibold">📝 Your Posts</h5>
+
+                {% for post in user_posts %}
+                    <div class="d-flex justify-content-between align-items-center p-2 mb-2 border rounded">
+
+                        <!-- LEFT: IMAGE + TEXT -->
+                        <div class="d-flex align-items-center gap-3">
+
+                            {% if post.image %}
+                                <img src="{{ post.image.url }}" 
+                                     style="width:50px; height:50px; object-fit:cover; border-radius:8px;">
+                            {% else %}
+                                <div style="
+                                    width:50px;
+                                    height:50px;
+                                    background:#eee;
+                                    border-radius:8px;
+                                "></div>
+                            {% endif %}
+
+                            <div>
+                                <div class="fw-semibold">{{ post.title }}</div>
+                                <small class="text-muted">❤️ {{ post.total_likes }}</small>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT: BUTTON -->
+                        <a href="{% url 'post_detail' post.id %}" 
+                           class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            View
+                        </a>
+
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No posts yet</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- LIKED POSTS -->
+        <div class="card shadow-sm border-0" style="border-radius:12px;">
+            <div class="card-body">
+                <h5 class="mb-3 fw-semibold">❤️ Liked Posts</h5>
+
+                {% for post in liked_posts %}
+                    <div class="d-flex justify-content-between align-items-center p-2 mb-2 border rounded">
+
+                        <!-- LEFT: IMAGE + TEXT -->
+                        <div class="d-flex align-items-center gap-3">
+
+                            {% if post.image %}
+                                <img src="{{ post.image.url }}" 
+                                     style="width:50px; height:50px; object-fit:cover; border-radius:8px;">
+                            {% else %}
+                                <div style="
+                                    width:50px;
+                                    height:50px;
+                                    background:#eee;
+                                    border-radius:8px;
+                                "></div>
+                            {% endif %}
+
+                            <div>
+                                <div class="fw-semibold">{{ post.title }}</div>
+                                <small class="text-muted">By {{ post.author }}</small>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT: BUTTON -->
+                        <a href="{% url 'post_detail' post.id %}" 
+                           class="btn btn-sm btn-outline-success rounded-pill px-3">
+                            View
+                        </a>
+
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No liked posts</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

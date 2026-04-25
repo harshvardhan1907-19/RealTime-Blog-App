@@ -1,0 +1,76 @@
+
+    {% for post in posts %}
+    <div class="card shadow-sm mb-4 border-0 position-relative" 
+         style="border-radius:14px; overflow:hidden; transition:0.2s;">
+    
+        <!-- IMAGE -->
+        {% if post.image %}
+            <div style="height:220px; overflow:hidden;">
+                <img src="{{ post.image.url }}" 
+                     style="width:100%; height:100%; object-fit:fill;">
+            </div>
+        {% endif %}
+    
+        <div class="card-body">
+    
+            <!-- TITLE -->
+            <h5 class="card-title mb-1">
+                <a href="{% url 'post_detail' post.id %}" 
+                   class="text-decoration-none text-dark fw-semibold">
+                    {{ post.title }}
+                </a>
+            </h5>
+    
+            <!-- AUTHOR + DATE -->
+            <div class="d-flex justify-content-between mb-2">
+                <small class="text-secondary">
+                    By {{ post.author }}
+                </small>
+                <small class="text-muted">
+                    {{ post.created_at|date:"M d, Y" }}
+                </small>
+            </div>
+    
+            <!-- CONTENT -->
+            <p class="card-text text-muted mb-3" style="font-size:14px;">
+                {{ post.content|truncatewords:15 }}
+            </p>
+    
+            <!-- LIKE SECTION -->
+            <div class="d-flex justify-content-between align-items-center">
+    
+                <button onclick="likePost({{post.id}})" 
+                        id="like-btn-{{ post.id }}" 
+                        class="btn btn-sm btn-light border rounded-pill px-3">
+                    {% if user in post.likes.all %}
+                        ❤️ Remove
+                    {% else %}
+                        🤍 Like
+                    {% endif %}
+                </button>
+    
+                <small id="like-count-{{ post.id }}" class="fw-semibold text-danger">
+                    ❤️ {{ post.total_likes }}
+                </small>
+    
+            </div>
+    
+        </div>
+    
+        <!-- ❤️ FLOATING HEART -->
+        {% comment %} <span id="heart-{{ post.id }}" style="
+            position:absolute;
+            bottom:12px;
+            right:15px;
+            font-size:20px;
+            color:red;
+        ">
+            {% if user in post.likes.all %}
+                ❤️ {{ post.total_likes }}
+            {% endif %}
+        </span> {% endcomment %}
+    
+    </div>
+    {% empty %}
+        <p class="text-muted">No posts found</p>
+    {% endfor %}

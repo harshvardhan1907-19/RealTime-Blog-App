@@ -1,0 +1,36 @@
+<div class="comment-box depth-{{ depth }}" id="comment-{{ comment.id }}">
+    
+    <div class="comment-header">
+        <strong>{{ comment.user }}</strong>
+
+        {% if comment.parent %}
+            <span class="reply-to">
+                ↳ replied to {{ comment.parent.user }}
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="comment-text">
+        {{ comment.text }}
+    </div>
+
+    <div class="comment-footer">
+        <small>{{ comment.created_at|date:"M d, H:i" }}</small>
+        <button type="button" class="btn-reply-toggle" onclick="showReplyForm({{comment.id}})">
+            <i class="bi bi-reply"></i> Reply
+        </button>
+    </div>
+
+    <form method="post" id="reply-form-{{ comment.id }}" class="reply-form">
+        {% csrf_token %}
+        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+        <textarea name="text" rows="2" required></textarea>
+        <button type="submit">Reply</button>
+    </form>
+
+    <div class="reply-list" id="reply-list-{{ comment.id }}">
+        {% for reply in comment.replies.all %}
+            {% include "blog/reply.html" with comment=reply depth=depth|add:1 %}
+        {% endfor %}
+    </div>
+</div>
