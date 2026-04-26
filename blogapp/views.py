@@ -161,9 +161,9 @@ class PostListView(ListView):
 def filter_posts(request):
         queryset = Post.objects.all()
 
-        query = request.GET.get("q")
+        query = request.GET.get("q") # getting filter value from url
         category = request.GET.get('category')
-        page = request.GET.get("page", 2)
+        page = request.GET.get("page", 1)
 
         if query:
             queryset = queryset.filter(
@@ -174,11 +174,6 @@ def filter_posts(request):
             queryset = queryset.filter(category__id=int(category))
 
         paginator = Paginator(queryset, 4)
-        # “Divide all posts into chunks of 4”
-        # IF Total posts = 10
-        # Page 1 → 4 posts
-        # Page 2 → 4 posts
-        # Page 3 → 2 posts
         page_obj = paginator.get_page(page)
 
         html = render_to_string("blog/post_list_partial.html", {

@@ -7,7 +7,7 @@
 <style>
     .card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 </style>
 
@@ -17,7 +17,7 @@
 <div class="card shadow-sm mb-4">
     <div class="card-body">
         <form class="row g-2" id="filter-form">
- 
+
             <div class="col-md-5">
                 <input type="text" id="filter-in" name="q" class="form-control" placeholder="Search posts...">
             </div>
@@ -26,7 +26,7 @@
                 <select name="category" class="form-select" id="filter-cat">
                     <option value="">All Categories</option>
                     {% for cat in categories %}
-                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    <option value="{{ cat.id }}">{{ cat.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -38,17 +38,20 @@
     </div>
 </div>
 
+<input type="hidden" id="hasNext" value="{{ page_obj.has_next|yesno:'true,false' }}">
 <!-- POSTS -->
 <div id="post-container">
     {% include "blog/post_list_partial.html" with posts=page_obj %}
 </div>
 
+
 <div id="loader" class="text-center my-3" style="display:none;">
     <p>Loading more posts...</p>
 </div>
 
+
 {% endblock %}
 
 {% block js %}
-    <script src={% static 'js/post_list.js' %}></script>
+<script src={% static 'js/post_list.js' %}></script>
 {% endblock %}
