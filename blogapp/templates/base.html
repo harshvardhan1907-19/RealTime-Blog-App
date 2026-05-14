@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Blog App{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-light">
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'post_list' %}">📝 BlogApp</a>
+
+            <div class="d-flex align-items-center gap-3">
+                <!-- CREATE POST -->
+                {% comment %} <a href="{% url 'post_create' %}" class="btn btn-success btn-sm px-3">
+                    ✍️ Create Post
+                </a> {% endcomment %}
+
+                <!-- PROFILE -->
+                <!-- <a href="{% url 'profile' %}" class="btn btn-info btn-sm px-3">
+                    👤 Profile
+                </a> -->
+                
+                <!-- In navbar, replace Profile button with dropdown including avatar -->
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle text-white text-decoration-none" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if user.profile.profile_pic and user.profile.profile_pic.name != 'default_avatar.png' %}
+                        <img src="{{ user.profile.profile_pic.url }}" alt="Avatar"
+                            style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                        {% else %}
+                        <div
+                            style="width: 32px; height: 32px; background: #667eea; border-radius: 50%; 
+                                        display: inline-flex; align-items: center; justify-content: center; color: white;">
+                            {{ user.username|make_list|first|upper }}
+                        </div>
+                        {% endif %}
+                        <span class="ms-1">{{ user.username }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}">👤 My Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'profile_update' %}">✏️ Edit Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'post_create' %}">✍️ Create Post</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><form action="{% url 'logout' %}" method="post" style="display: inline; align-items: center;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger-emphasis btn-sm w-100">
+                                🚪 Logout
+                            </button>
+                        </form></li>
+                    </ul>
+                </div>
+
+                <!-- 🔔 NOTIFICATIONS -->
+                {% if request.user.is_authenticated %}
+                <div class="notification-wrapper" id="wrapper">
+                    <a href="{% url 'notifications' %}" class="notification-bell-link" id="notificationBellLink">
+                        🔔
+                        <span id="notif-count" class="notification-badge">0</span>
+                    </a>
+
+                    <div id="notif-box" class="notification-dropdown">
+                        <div class="notification-header">
+                            <span>📬 Notifications</span>
+                        </div>
+                        <div id="notif-list">
+                            <div class="notification-loading">
+                                <div class="spinner"></div>
+                                <span>Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Link to your existing notification.js -->
+    <script src="{% static 'js/notification.js' %}"></script>
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script> {% endcomment %}
+
+    {% block js %}{% endblock %}
+
+</body>
+
+</html>

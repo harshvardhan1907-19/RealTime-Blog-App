@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profile - {{ user.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'profile.css' %}">
+{% endblock %}
+
+{% block content %}
+{% comment %} <div style="background: blue; color: white; padding: 10px;">
+    Profile object: {{ profile }}<br>
+    Profile user: {{ profile.user.username }}<br>
+    Profile ID: {{ profile.id }}
+</div> {% endcomment %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <!-- Profile Card -->
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body text-center">
+                    <!-- Avatar with Upload Overlay -->
+                    <div class="avatar-wrapper d-inline-block mb-3">
+                        {% comment %} <div style="background: yellow; padding: 10px; margin: 10px;">
+                            <strong>DEBUG:</strong><br>
+                            user: {{ user.username }}<br>
+                            profile object: {{ profile }}<br>
+                            profile.user: {{ profile.user.username }}<br>
+                            profile_pic value: {{ profile.profile_pic.url }}<br>
+                            Condition: {% if profile.profile_pic %} TRUE {% else %} FALSE {% endif %}
+                        </div> {% endcomment %}
+
+                        {% comment %} <img src="{{ url }}" alt="{{ user.username }}" 
+                            style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block !important; visibility: visible !important; opacity: 1 !important;"> {% endcomment %}
+
+                        {% if profile.profile_pic %}
+                            <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="profile-avatar">
+                        {% else %}
+                            <div class="default-avatar">
+                                {{ user.username|make_list|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="avatar-overlay" onclick="location.href='{% url 'profile_update' %}'">
+                            <span>📷 Change</span>
+                        </div>
+                    </div>
+                    
+                    <h3>{{ user.get_full_name|default:user.username }}</h3>
+                    {% comment %} <p class="text-muted">@{{ user.username }}</p> {% endcomment %}
+                    
+                    {% if profile.bio %}
+                        <p class="mt-2">{{ profile.bio }}</p>
+                    {% else %}
+                        <p class="text-muted mt-2">No bio yet. <a href="{% url 'profile_update' %}">Add one</a></p>
+                    {% endif %}
+                    
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <h5>{{ total_posts }}</h5>
+                            <small class="text-muted">Posts</small>
+                        </div>
+                        <div class="col-6">
+                            <h5>{{ total_likes }}</h5>
+                            <small class="text-muted">Likes Received</small>
+                        </div>
+                        <div class="col-4">
+                            <h5>{{ total_views }}</h5>  <!-- 👈 ADD THIS -->
+                            <small class="text-muted">Total Views</small>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <a href="{% url 'profile_update' %}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                        ✏️ Edit Profile
+                    </a>
+                    <a href="{% url 'password_change' %}" class="btn btn-outline-warning btn-sm w-100 mb-2">
+                        🔑 Change Password
+                    </a>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline; align-items: center;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                🚪 Logout
+                            </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <!-- User's Posts -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0">📝 Your Posts</h5>
+                </div>
+                <div class="card-body">
+                    {% for post in user_posts %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <div>
+                                <a href="{% url 'post_detail' post.id %}" class="text-decoration-none">
+                                    <strong>{{ post.title }}</strong>
+                                </a>
+                                <br>
+                                <small class="text-muted">❤️ {{ post.total_likes }} likes</small>
+                            </div>
+                            <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-outline-primary">
+                                View
+                            </a>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No posts yet. <a href="{% url 'post_create' %}">Create one</a></p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Liked Posts -->
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0">❤️ Posts You Liked</h5>
+                </div>
+                <div class="card-body">
+                    {% for post in liked_posts %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <div>
+                                <a href="{% url 'post_detail' post.id %}" class="text-decoration-none">
+                                    <strong>{{ post.title }}</strong>
+                                </a>
+                                <br>
+                                <small class="text-muted">By {{ post.author.username }}</small>
+                            </div>
+                            <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-outline-primary">
+                                View
+                            </a>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No liked posts yet. Start liking posts!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

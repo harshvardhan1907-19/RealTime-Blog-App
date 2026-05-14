@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white border-0">
+                <h4 class="mb-0">✏️ Edit Profile</h4>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- Current Avatar Preview -->
+                <div class="text-center mb-4">
+                    <div class="avatar-wrapper d-inline-block">
+                        {% if profile.profile_pic and profile.profile_pic.name != 'default_avatar.png' %}
+                        <img src="{{ profile.profile_pic.url }}" alt="Current avatar" class="profile-avatar">
+                        {% else %}
+                        <div class="default-avatar">
+                            {{ user.username|make_list|first|upper }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if profile.profile_pic and profile.profile_pic.name != 'default_avatar.png' %}
+                    <div class="mt-2">
+                        <a href="{% url 'delete_profile_pic' %}" class="text-danger small"
+                            onclick="return confirm('Remove profile picture?')">
+                            🗑️ Remove picture
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Profile Picture</label>
+                        {{ form.profile_pic }}
+                        <small class="text-muted">Recommended: Square image, at least 300x300px</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        {{ form.bio }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <a href="{% url 'profile' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
