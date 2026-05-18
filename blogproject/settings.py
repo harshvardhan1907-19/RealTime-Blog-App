@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-6&9^ku11bwu0bta*300if8igjgw+kc(z=x2o7zpx%r3=ft6-5r
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'realtime-blog-app-vytx.onrender.com',
+    'realtime-blog-app.onrender.com',
     'localhost',
     '127.0.0.1',
 ]
