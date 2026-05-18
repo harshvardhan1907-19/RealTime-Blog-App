@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 import dj_database_url
@@ -54,10 +55,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'blogapp',
     'rest_framework',
     'channels',
 ]
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+# Use environment variables for security
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('diumwrv07'),
+    'API_KEY': os.environ.get('942418273724973'),
+    'API_SECRET': os.environ.get('G_qaI_EVZcZxOKFJILpjL1hRewc'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
