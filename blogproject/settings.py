@@ -67,17 +67,16 @@ import cloudinary.uploader
 import cloudinary.api
 
 # Use environment variables for security
-# CLOUDINARY_STORAGE = {
-#     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-#     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-#     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-# }
-
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'diumwrv07',
-    'API_KEY': '942418273724973',
-    'API_SECRET': 'G_qaI_EVZcZxOKFJILpjL1hRewc',
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
+print("=== Cloudinary Debug ===")
+print("CLOUD_NAME from env:", os.environ.get('CLOUDINARY_CLOUD_NAME'))
+print("API_KEY from env:", os.environ.get('CLOUDINARY_API_KEY'))
+print("CLOUDINARY_STORAGE dict:", CLOUDINARY_STORAGE)
+print("Cloudinary config after init:", cloudinary.config().cloud_name)
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 print("DEFAULT_FILE_STORAGE:", DEFAULT_FILE_STORAGE)
