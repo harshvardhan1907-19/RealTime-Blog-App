@@ -201,8 +201,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'post_list'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'blogapp' / 'media'
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'blogapp' / 'media'
 
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "login"
