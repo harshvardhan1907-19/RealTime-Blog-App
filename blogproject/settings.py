@@ -75,8 +75,8 @@ import cloudinary.api
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'diumwrv07',
-    'API_KEY': '772991283337552',
-    'API_SECRET': 'muPIdJaKZgMlo7Er24CF5owUc_g',
+    'API_KEY': '942418273724973',
+    'API_SECRET': 'G_qaI_EVZcZxOKFJILpjL1hRewc',
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
