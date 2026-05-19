@@ -68,9 +68,9 @@ import cloudinary.api
 
 # Use environment variables for security
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('diumwrv07'),
-    'API_KEY': os.environ.get('942418273724973'),
-    'API_SECRET': os.environ.get('G_qaI_EVZcZxOKFJILpjL1hRewc'),
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', '')
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
