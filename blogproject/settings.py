@@ -67,14 +67,22 @@ import cloudinary.uploader
 import cloudinary.api
 
 # Use environment variables for security
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+#     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+#     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+# }
+
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    'CLOUD_NAME': 'diumwrv07',
+    'API_KEY': '772991283337552',
+    'API_SECRET': 'muPIdJaKZgMlo7Er24CF5owUc_g',
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 print("DEFAULT_FILE_STORAGE:", DEFAULT_FILE_STORAGE)
+from django.core.files.storage import default_storage
+print(f"Default storage class at runtime: {default_storage.__class__}")
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
