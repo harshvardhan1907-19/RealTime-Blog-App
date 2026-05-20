@@ -72,18 +72,15 @@ import cloudinary.api
 #     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
 #     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 # }
-# ✅ ADD this single line
-CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
-print("=== Cloudinary Debug ===")
-# print("CLOUD_NAME from env:", os.environ.get('CLOUDINARY_CLOUD_NAME'))
-# print("API_KEY from env:", os.environ.get('CLOUDINARY_API_KEY'))
-print("CLOUDINARY_URL from env:", CLOUDINARY_URL)
-print("Cloudinary config after init:", cloudinary.config().cloud_name)
 
+CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+print("=" * 50)
+print("CLOUDINARY_URL from env:", os.environ.get('CLOUDINARY_URL'))
+print("Cloudinary cloud name:", cloudinary.config().cloud_name)
 print("DEFAULT_FILE_STORAGE:", DEFAULT_FILE_STORAGE)
-from django.core.files.storage import default_storage
-print(f"Default storage class at runtime: {default_storage.__class__}")
+print("=" * 50)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
