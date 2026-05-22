@@ -54,8 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'cloudinary_storage',
+    'django.contrib.staticfiles',
     'cloudinary',
     'blogapp',
     'rest_framework',
@@ -66,21 +66,18 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-# Use environment variables for security
-# CLOUDINARY_STORAGE = {
-#     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-#     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-#     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-# }
-
 CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-print("=" * 50)
-print("CLOUDINARY_URL from env:", os.environ.get('CLOUDINARY_URL'))
-print("Cloudinary cloud name:", cloudinary.config().cloud_name)
-print("DEFAULT_FILE_STORAGE:", DEFAULT_FILE_STORAGE)
-print("=" * 50)
+# Use environment variables for security
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
