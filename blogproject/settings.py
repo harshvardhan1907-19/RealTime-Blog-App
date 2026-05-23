@@ -155,6 +155,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'blogapp' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Whitenoise configuration (for production)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'post_list'
 LOGIN_URL = "login"
