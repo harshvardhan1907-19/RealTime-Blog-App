@@ -2,79 +2,79 @@
 {% load static %}
 {% block title %}All Posts{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/post_list.css' %}">
+{% endblock %}
+
 {% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <h1>📝 Discover Amazing Stories</h1>
+    <p>Explore thought-provoking articles, share your perspective, and join our growing community of writers and
+        readers.</p>
+</div>
 
-<style>
-    .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-</style>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show modern-alert" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
 
-    {% if messages %}
-        {% for message in messages %}
-        <div id="alert-msg" class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    {% endif %}
-
-<h2 class="mb-4">📰 All Posts</h2>
-
-<!-- SEARCH BAR -->
-<div class="card shadow-sm mb-4">
-    <div class="card-body row">
-        <div class="col-lg-9">
-            <form class="row g-2 w-100 space-between" id="filter-form">
-     
-                <div class="col-md-4">
-                    <input type="text" id="filter-in" name="q" class="form-control" placeholder="Search posts...">
-                </div>
-    
-                <div class="col-md-4">
-                    <select name="category" class="form-select" id="filter-cat">
-                        <option value="">All Categories</option>
-                        {% for cat in categories %}
-                            <option value="{{ cat.id }}">{{ cat.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-    
-                <div class="col-md-4 d-grid">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </div>
-    
-                <input type="hidden" name="sort" id="sort-hidden" value="-created_at">
-            </form>
-        </div>
-
-        <div class="col-lg-3">
-            <div class="col-md-3 ms-auto w-100">
-                <select class="form-select w-100" id="sort-select">
-                    <option value="-created_at">Newest First</option>
-                    <option value="-views">Most Viewed</option>
-                    <option value="-likes">Most Liked</option>
+<!-- Modern Filter Bar -->
+<div class="filter-bar">
+    <form id="filter-form">
+        <div class="row align-items-center g-3">
+            <div class="col-md-4">
+                <input type="text" name="q" id="filter-in" class="form-control" placeholder="🔍 Search articles..."
+                    style="border-radius: 40px; padding: 0.75rem 1.25rem;">
+            </div>
+            <div class="col-md-3">
+                <select name="category" id="filter-cat" class="form-select"
+                    style="border-radius: 40px; padding: 0.75rem 1.25rem;">
+                    <option value="">📂 All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
+            <div class="col-md-3">
+                <select id="sort-select" class="form-select" style="border-radius: 40px; padding: 0.75rem 1.25rem;">
+                    <option value="-created_at">🕐 Newest First</option>
+                    <option value="-views">👁️ Most Viewed</option>
+                    <option value="-likes">❤️ Most Liked</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="search-btn" class="btn w-100"
+                    style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 40px; padding: 0.75rem;">
+                    🔍 Search
+                </button>
+            </div>
         </div>
-    </div>
+        <input type="hidden" name="sort" id="sort-hidden" value="-created_at">
+    </form>
 </div>
 
 <input type="hidden" id="hasNext" value="{{ page_obj.has_next|yesno:'true,false' }}">
-<!-- POSTS -->
+
+<!-- Posts Grid -->
 <div id="post-container">
-    {% include "blog/post_list_partial.html" with posts=page_obj %}
+    <div class="posts-grid">
+        {% include "blog/post_list_partial_modern.html" with posts=page_obj %}
+    </div>
 </div>
 
-<div id="loader" class="text-center my-3" style="display:none;">
-    <p>Loading more posts...</p>
+<!-- Modern Loader -->
+<div id="loader" class="loader-modern" style="display: none;">
+    <div class="spinner"></div>
+    <p style="color: #64748b;">Loading more amazing stories...</p>
 </div>
-
-
 {% endblock %}
 
 {% block js %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src={% static 'js/post_list.js' %}></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/post_list_modern.js' %}"></script>
 {% endblock %}

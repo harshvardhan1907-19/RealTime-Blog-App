@@ -158,6 +158,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Whitenoise configuration (for production)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# python manage.py collectstatic --noinput
+# Why: When DEBUG=False, Django doesn't serve static files automatically. collectstatic gathers all static files into STATIC_ROOT (one folder), and Whitenoise serves them efficiently in production.
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'post_list'
 LOGIN_URL = "login"
@@ -179,6 +182,7 @@ if IS_PRODUCTION:
         },
     }
     CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
+    # It's a connection string that contains all your Cloudinary credentials in one line:
 else:
     # Local development - Use local file storage
     DEBUG = True

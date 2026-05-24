@@ -1,0 +1,51 @@
+{% for post in posts %}
+<div class="post-card-modern">
+    <div class="post-card-image">
+        {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}">
+        {% else %}
+        <div
+            style="height: 220px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white;">
+            📷 No Image
+        </div>
+        {% endif %}
+        <span class="post-card-category">{{ post.category.name }}</span>
+    </div>
+    <div class="post-card-content">
+        <h3 class="post-card-title">
+            <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+        </h3>
+        <div class="post-card-meta">
+            <div class="post-card-author">
+                <div class="post-card-author-img">
+                    {{ post.author.username|first|upper }}
+                </div>
+                <span>{{ post.author.username }}</span>
+            </div>
+            <span>{{ post.created_at|date:"M d, Y" }}</span>
+        </div>
+        <p class="post-card-excerpt">
+            {{ post.content|truncatewords:25 }}
+        </p>
+        <div class="post-card-stats">
+            <div class="post-card-stats-left">
+                <div class="stat-item">👁️ {{ post.views }}</div>
+                <div class="stat-item">💬 {{ post.comment_set.count }}</div>
+            </div>
+            <button onclick="likePost({{ post.id }})" id="like-btn-{{ post.id }}" class="like-btn-modern">
+                {% if user in post.likes.all %}
+                ❤️ <span id="like-count-{{ post.id }}">{{ post.total_likes }}</span>
+                {% else %}
+                🤍 <span id="like-count-{{ post.id }}">{{ post.total_likes }}</span>
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="empty-state">
+    <div class="empty-state-icon">📭</div>
+    <h3>No posts found</h3>
+    <p>Try adjusting your search or filter to find what you're looking for.</p>
+</div>
+{% endfor %}
