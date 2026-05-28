@@ -196,3 +196,21 @@ else:
     }
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'blogapp' /'media'
+
+    # When you deploy to Render:
+
+    # 1. Render clones your GitHub code
+    # 2. Runs Build Command: pip install -r requirements.txt
+    # 3. Runs: python manage.py collectstatic --noinput
+    #                     │
+    #             ▼
+    #  Django CREATES staticfiles/ folder
+    #  (on Render's server, NOT on your PC)
+    #             │
+    #             ▼
+    #  Copies: blogapp/static/images/avatar.png
+    #  Into:    staticfiles/images/avatar.png
+    #             │
+    #             ▼
+    #  Your site serves images from /static/ URL
+    #  (but files are actually in staticfiles/ folder on server)
