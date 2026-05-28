@@ -250,7 +250,7 @@ def filter_posts(request):
         paginator = Paginator(queryset, 4)
         page_obj = paginator.get_page(page)
 
-        html = render_to_string("blog/post_list_partial.html", {
+        html = render_to_string("blog/post_list_partial_modern.html", {
             "posts": page_obj
         }, request=request)
         print("COUNT:", queryset.count())
@@ -289,15 +289,17 @@ class PostDetailView(DetailView):
 
         if request.user.is_authenticated and text:
             parent = None
+            # reply_to = None
 
             if parent_id:
-                parent = Comment.objects.get(id=parent_id)
+                parent_comment = Comment.objects.get(id=parent_id)
+                parent = parent_comment
 
             comment = Comment.objects.create(
                 post = self.object,
                 user = request.user,
                 text = text,
-                parent = parent
+                parent = parent,
             )
 
             channel_layer = get_channel_layer()
@@ -354,10 +356,10 @@ class PostDetailView(DetailView):
                 except Exception as e:
                     print(f"❌ WebSocket send FAILED: {e}")
 
-            html = render_to_string("blog/reply.html", {
+            html = render_to_string("blog/reply_modern.html", {
                 "comment": comment,
                 "request": request,
-                "depth": 1 if parent else 0
+                "depth": 1 if parent else 0,
             })
 
             return JsonResponse({"html": html})

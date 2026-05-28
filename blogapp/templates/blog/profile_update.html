@@ -1,70 +1,335 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Edit Profile{% endblock %}
+{% block title %}Edit Profile - {{ user.username }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'profile.css' %}">
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --text-dark: #1e293b;
+        --text-gray: #64748b;
+        --bg-light: #f8fafc;
+        --border-light: #e2e8f0;
+        --success: #10b981;
+        --danger: #ef4444;
+    }
+    
+    .edit-profile-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    /* Profile Card Wrapper */
+    .edit-profile-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Cover Photo */
+    .edit-cover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 180px;
+        width: 100%;
+    }
+    
+    /* Avatar Section - Positioned perfectly over the seam */
+    .avatar-section {
+        text-align: center;
+        margin-top: -65px; /* Pulls exactly half the avatar up into the cover */
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .avatar-wrapper {
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        width: 130px;
+        height: 130px;
+    }
+    
+    .profile-avatar-large {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+    }
+    
+    .avatar-wrapper:hover .profile-avatar-large {
+        transform: scale(1.02);
+    }
+    
+    .default-avatar-large {
+        width: 130px;
+        height: 130px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 52px;
+        font-weight: bold;
+        color: white;
+        border: 4px solid white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .avatar-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border: 4px solid white; /* Keeps size synchronized */
+        box-sizing: border-box;
+    }
+    
+    .avatar-wrapper:hover .avatar-overlay {
+        opacity: 1;
+    }
+    
+    .avatar-overlay span {
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .remove-pic-link {
+        display: inline-block;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: #ef4444;
+        text-decoration: none;
+    }
+    
+    .remove-pic-link:hover {
+        text-decoration: underline;
+        color: #dc2626;
+    }
+    
+    /* Form Styles */
+    .edit-form {
+        padding: 1.5rem 2.5rem 2.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+        gap: 0.5rem;
+    }
+    
+    /* Enforces styling on Django generated textarea form tags */
+    .edit-form textarea, 
+    .edit-form input[type="text"] {
+        width: 100%;
+        min-height: 120px;
+        padding: 0.85rem 1rem;
+        border: 2px solid var(--border-light);
+        border-radius: 16px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        resize: vertical;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+    
+    .edit-form textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .form-text {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-gray);
+        margin-top: 0.4rem;
+    }
+    
+    /* Button Styles */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn-save {
+        flex: 1;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 0.85rem 1.5rem;
+        border-radius: 40px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-cancel {
+        flex: 1;
+        background: var(--bg-light);
+        color: var(--text-dark);
+        border: 1px solid var(--border-light);
+        padding: 0.85rem 1.5rem;
+        border-radius: 40px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-cancel:hover {
+        background: var(--border-light);
+        transform: translateY(-2px);
+    }
+    
+    /* Alert Styles */
+    .alert-modern {
+        padding: 1rem 1.25rem;
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .alert-success { background: #d1fae5; color: #065f46; }
+    .alert-error { background: #fee2e2; color: #991b1b; }
+    
+    /* Responsive styling adjustments */
+    @media (max-width: 768px) {
+        .edit-form {
+            padding: 1.25rem;
+        }
+        .form-actions {
+            flex-direction: column;
+        }
+        .profile-avatar-large, .default-avatar-large, .avatar-wrapper {
+            width: 110px;
+            height: 110px;
+        }
+        .default-avatar-large { font-size: 38px; }
+        .avatar-section { margin-top: -55px; }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header bg-white border-0">
-                <h4 class="mb-0">✏️ Edit Profile</h4>
-            </div>
-            <div class="card-body">
-                {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
+<div class="edit-profile-container">
+    <div class="edit-profile-card">
+        
+        <div class="edit-cover"></div>
+        
+        <div class="avatar-section">
+            <div class="avatar-wrapper" onclick="document.getElementById('id_profile_pic').click()">
+                {% if profile.profile_pic %}
+                    <img src="{{ profile.profile_pic.url }}" alt="Profile picture" class="profile-avatar-large">
+                {% else %}
+                    <div class="default-avatar-large">
+                        {{ user.username|make_list|first|upper }}
+                    </div>
                 {% endif %}
-
-                <!-- Current Avatar Preview -->
-                <div class="text-center mb-4">
-                    <div class="avatar-wrapper d-inline-block">
-                        {% if profile.profile_pic and profile.profile_pic.name != 'default_avatar.png' %}
-                        <img src="{{ profile.profile_pic.url }}" alt="Current avatar" class="profile-avatar">
-                        {% else %}
-                        <div class="default-avatar">
-                            {{ user.username|make_list|first|upper }}
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% if profile.profile_pic and profile.profile_pic.name != 'default_avatar.png' %}
-                    <div class="mt-2">
-                        <a href="{% url 'delete_profile_pic' %}" class="text-danger small"
-                            onclick="return confirm('Remove profile picture?')">
-                            🗑️ Remove picture
-                        </a>
-                    </div>
-                    {% endif %}
+                <div class="avatar-overlay">
+                    <span>📷 Change</span>
                 </div>
-
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-
-                    <div class="mb-3">
-                        <label class="form-label">Profile Picture</label>
-                        {{ form.profile_pic }}
-                        <small class="text-muted">Recommended: Square image, at least 300x300px</small>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Bio</label>
-                        {{ form.bio }}
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                        <a href="{% url 'profile' %}" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </form>
             </div>
+            {% if profile.profile_pic %}
+                <div>
+                    <a href="{% url 'delete_profile_pic' %}" class="remove-pic-link" onclick="return confirm('Remove your profile picture?')">
+                        🗑️ Remove picture
+                    </a>
+                </div>
+            {% endif %}
         </div>
+            
+        <form method="post" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-modern alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div style="display: none;">
+                {{ form.profile_pic }}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label"><i>📝</i> Bio</label>
+                {{ form.bio }}
+                <small class="form-text">Tell something about yourself. Max 500 characters.</small>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    💾 Save Changes
+                </button>
+                <a href="{% url 'profile' %}" class="btn-cancel">
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+    // Preview selected image file in realtime inside the avatar display container frame
+    document.getElementById('id_profile_pic')?.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const avatarImg = document.querySelector('.profile-avatar-large');
+                const defaultAvatar = document.querySelector('.default-avatar-large');
+                if (avatarImg) {
+                    avatarImg.src = event.target.result;
+                } else if (defaultAvatar) {
+                    const newImg = document.createElement('img');
+                    newImg.src = event.target.result;
+                    newImg.className = 'profile-avatar-large';
+                    newImg.alt = 'Profile preview';
+                    defaultAvatar.parentNode.replaceChild(newImg, defaultAvatar);
+                }
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+</script>
 {% endblock %}

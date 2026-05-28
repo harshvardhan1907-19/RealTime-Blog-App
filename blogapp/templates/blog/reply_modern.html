@@ -1,0 +1,58 @@
+{% load static %}
+<div class="comment-wrapper" id="comment-wrapper-{{ comment.id }}">
+    <div class="comment-card" id="comment-{{ comment.id }}">
+        <div class="comment-header">
+            <div class="comment-author">
+                <div class="comment-avatar">
+                    {{ comment.user.username|first|upper }}
+                </div>
+                <div>
+                    <div class="comment-author-name">{{ comment.user.username }}</div>
+                    <div class="comment-time">{{ comment.created_at|date:"M d, Y • g:i A" }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if comment.parent %}
+            <div class="replying-to">
+                <span class="reply-indicator">↳</span>
+                Replying to <span class="mentioned-user">@{{ comment.parent.user.username }}</span>
+            </div>
+        {% endif %}
+
+        <div class="comment-text">
+            {{ comment.text|linebreaks }}
+        </div>
+
+        {% comment %} {% if user.is_authenticated %} {% endcomment %}
+            <button onclick="showReplyForm({{ comment.id }})" class="reply-btn">
+                💬 Reply
+            </button>
+
+            {% if comment.replies.count != 0 %}
+                <button onclick="toggleReplies({{comment.id}})" class="comment-action-btn show-replies-btn" id="toggle-btn-{{ comment.id }}">
+                    📎 Show {{ comment.replies.count }} {% if comment.replies.count == 1 %} reply {% else %}replies
+                    {% endif %}
+                </button>
+            {% endif %}
+
+            <form id="reply-form-{{ comment.id }}" class="reply-form" style="display: none; margin-top: 1rem;">
+                {% csrf_token %}
+                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                <textarea name="text" rows="2" placeholder="Write a reply..."
+                    style="width: 100%; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.75rem;"></textarea>
+                <button type="submit"
+                    style="margin-top: 0.5rem; background: #6366f1; color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer;">
+                    Submit Reply
+                </button>
+            </form>
+        {% comment %} {% endif %} {% endcomment %}
+    </div>
+    
+    <!-- Replies container with proper ID -->
+    <div id="replies-container-{{ comment.id }}" class="replies" style="display: none;">
+        {% for reply in comment.replies.all %}
+            {% include "blog/reply_modern.html" with comment=reply depth=1 %}
+        {% endfor %}
+    </div>
+</div>

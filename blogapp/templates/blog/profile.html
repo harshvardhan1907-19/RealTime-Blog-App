@@ -7,136 +7,152 @@
 {% endblock %}
 
 {% block content %}
-{% comment %} <div style="background: blue; color: white; padding: 10px;">
-    Profile object: {{ profile }}<br>
-    Profile user: {{ profile.user.username }}<br>
-    Profile ID: {{ profile.id }}
-</div> {% endcomment %}
 <div class="container">
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <!-- Profile Card -->
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body text-center">
-                    <!-- Avatar with Upload Overlay -->
-                    <div class="avatar-wrapper d-inline-block mb-3">
-                        {% comment %} <div style="background: yellow; padding: 10px; margin: 10px;">
-                            <strong>DEBUG:</strong><br>
-                            user: {{ user.username }}<br>
-                            profile object: {{ profile }}<br>
-                            profile.user: {{ profile.user.username }}<br>
-                            profile_pic value: {{ profile.profile_pic.url }}<br>
-                            Condition: {% if profile.profile_pic %} TRUE {% else %} FALSE {% endif %}
-                        </div> {% endcomment %}
-
-                        {% comment %} <img src="{{ url }}" alt="{{ user.username }}" 
-                            style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block !important; visibility: visible !important; opacity: 1 !important;"> {% endcomment %}
-
-                        {% if profile.profile_pic %}
-                            <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="profile-avatar">
-                        {% else %}
-                            <div class="default-avatar">
-                                {{ user.username|make_list|first|upper }}
-                            </div>
-                        {% endif %}
-                        <div class="avatar-overlay" onclick="location.href='{% url 'profile_update' %}'">
-                            <span>📷 Change</span>
-                        </div>
+    <!-- Cover Photo -->
+    <div class="profile-cover">
+        <img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1200&h=300&fit=crop" alt="Cover">
+    </div>
+    
+    <!-- Profile Header Card -->
+    <div class="profile-header-card">
+        <div class="text-center">
+            <!-- Avatar with Upload Overlay -->
+            <div class="avatar-wrapper">
+                {% if profile.profile_pic %}
+                    <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="profile-avatar-large">
+                {% else %}
+                    <div class="default-avatar-large">
+                        {{ user.username|make_list|first|upper }}
                     </div>
-                    
-                    <h3>{{ user.get_full_name|default:user.username }}</h3>
-                    {% comment %} <p class="text-muted">@{{ user.username }}</p> {% endcomment %}
-                    
-                    {% if profile.bio %}
-                        <p class="mt-2">{{ profile.bio }}</p>
-                    {% else %}
-                        <p class="text-muted mt-2">No bio yet. <a href="{% url 'profile_update' %}">Add one</a></p>
-                    {% endif %}
-                    
-                    <div class="row mt-4">
-                        <div class="col-6">
-                            <h5>{{ total_posts }}</h5>
-                            <small class="text-muted">Posts</small>
-                        </div>
-                        <div class="col-6">
-                            <h5>{{ total_likes }}</h5>
-                            <small class="text-muted">Likes Received</small>
-                        </div>
-                        <div class="col-4">
-                            <h5>{{ total_views }}</h5>  <!-- 👈 ADD THIS -->
-                            <small class="text-muted">Total Views</small>
-                        </div>
-                    </div>
-                    
-                    <hr>
-                    
-                    <a href="{% url 'profile_update' %}" class="btn btn-outline-primary btn-sm w-100 mb-2">
-                        ✏️ Edit Profile
-                    </a>
-                    <a href="{% url 'password_change' %}" class="btn btn-outline-warning btn-sm w-100 mb-2">
-                        🔑 Change Password
-                    </a>
-                    <form action="{% url 'logout' %}" method="post" style="display: inline; align-items: center;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                🚪 Logout
-                            </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-8">
-            <!-- User's Posts -->
-            <div class="card shadow-sm border-0 rounded-4 mb-4">
-                <div class="card-header bg-white border-0">
-                    <h5 class="mb-0">📝 Your Posts</h5>
-                </div>
-                <div class="card-body">
-                    {% for post in user_posts %}
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                            <div>
-                                <a href="{% url 'post_detail' post.id %}" class="text-decoration-none">
-                                    <strong>{{ post.title }}</strong>
-                                </a>
-                                <br>
-                                <small class="text-muted">❤️ {{ post.total_likes }} likes</small>
-                            </div>
-                            <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-outline-primary">
-                                View
-                            </a>
-                        </div>
-                    {% empty %}
-                        <p class="text-muted">No posts yet. <a href="{% url 'post_create' %}">Create one</a></p>
-                    {% endfor %}
+                {% endif %}
+                <div class="avatar-overlay" onclick="location.href='{% url 'profile_update' %}'">
+                    <span>📷 Change</span>
                 </div>
             </div>
             
-            <!-- Liked Posts -->
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-header bg-white border-0">
-                    <h5 class="mb-0">❤️ Posts You Liked</h5>
+            <h2 style="margin-top: 0.5rem;">{{ user.get_full_name|default:user.username }}</h2>
+            <p style="color: var(--text-gray);">@{{ user.username }}</p>
+            
+            <!-- Bio -->
+            {% if profile.bio %}
+                <div class="profile-bio">
+                    {{ profile.bio }}
                 </div>
-                <div class="card-body">
-                    {% for post in liked_posts %}
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                            <div>
-                                <a href="{% url 'post_detail' post.id %}" class="text-decoration-none">
-                                    <strong>{{ post.title }}</strong>
-                                </a>
-                                <br>
-                                <small class="text-muted">By {{ post.author.username }}</small>
-                            </div>
-                            <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-outline-primary">
-                                View
-                            </a>
-                        </div>
-                    {% empty %}
-                        <p class="text-muted">No liked posts yet. Start liking posts!</p>
-                    {% endfor %}
+            {% else %}
+                <div class="profile-bio" style="background: transparent; padding: 0;">
+                    <a href="{% url 'profile_update' %}" style="color: var(--primary);">Add a bio</a>
                 </div>
+            {% endif %}
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_posts }}</div>
+                    <div class="stat-label">Posts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_likes }}</div>
+                    <div class="stat-label">Likes Received</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_views }}</div>
+                    <div class="stat-label">Total Views</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ liked_posts|length }}</div>
+                    <div class="stat-label">Liked Posts</div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="profile-actions">
+                <a href="{% url 'profile_update' %}" class="btn-profile btn-primary-profile">
+                    ✏️ Edit Profile
+                </a>
+                <a href="{% url 'password_change' %}" class="btn-profile btn-outline-profile">
+                    🔑 Change Password
+                </a>
+                <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-profile btn-danger-profile">
+                        🚪 Logout
+                    </button>
+                </form>
             </div>
         </div>
     </div>
+    
+    <!-- Tabs Section -->
+    <div style="background: white; border-radius: 24px; margin-top: 1.5rem; padding: 1.5rem;">
+        <div class="profile-tabs">
+            <button class="tab-btn active" onclick="switchTab('posts')">📝 My Posts</button>
+            <button class="tab-btn" onclick="switchTab('liked')">❤️ Liked Posts</button>
+        </div>
+        
+        <!-- My Posts Tab -->
+        <div id="posts-tab" class="tab-content active">
+            {% for post in user_posts %}
+                <div class="post-list-item">
+                    <div class="post-info">
+                        <h4><a href="{% url 'post_detail' post.id %}">{{ post.title }}</a></h4>
+                        <div class="post-stats">
+                            <span>❤️ {{ post.total_likes }} likes</span>
+                            <span>👁️ {{ post.views }} views</span>
+                            <span>📅 {{ post.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'post_detail' post.id %}" class="view-btn">View →</a>
+                </div>
+            {% empty %}
+                <div style="text-align: center; padding: 3rem; color: var(--text-gray);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                    <p>No posts yet.</p>
+                    <a href="{% url 'post_create' %}" style="color: var(--primary);">Create your first post →</a>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Liked Posts Tab -->
+        <div id="liked-tab" class="tab-content">
+            {% for post in liked_posts %}
+                <div class="post-list-item">
+                    <div class="post-info">
+                        <h4><a href="{% url 'post_detail' post.id %}">{{ post.title }}</a></h4>
+                        <div class="post-stats">
+                            <span>By {{ post.author.username }}</span>
+                            <span>❤️ {{ post.total_likes }} likes</span>
+                            <span>📅 {{ post.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'post_detail' post.id %}" class="view-btn">View →</a>
+                </div>
+            {% empty %}
+                <div style="text-align: center; padding: 3rem; color: var(--text-gray);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">❤️</div>
+                    <p>No liked posts yet.</p>
+                    <p style="font-size: 0.85rem;">Start liking posts to see them here!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
+
+<script>
+    function switchTab(tab) {
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        if (tab === 'posts') {
+            document.querySelector('.tab-btn:first-child').classList.add('active');
+            document.getElementById('posts-tab').classList.add('active');
+            document.getElementById('liked-tab').classList.remove('active');
+        } else {
+            document.querySelector('.tab-btn:last-child').classList.add('active');
+            document.getElementById('liked-tab').classList.add('active');
+            document.getElementById('posts-tab').classList.remove('active');
+        }
+    }
+</script>
 {% endblock %}

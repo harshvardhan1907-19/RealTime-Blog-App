@@ -41,6 +41,7 @@ class Comment(models.Model):
         blank=True,
         related_name='replies' # 👉 related_name = name used to access reverse data
     )
+    reply_to = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="replies_received")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -1,220 +1,107 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Post Detail{% endblock %}
+{% block title %}{{ object.title }} | BlogApp{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/comment.css' %}">
+    <link rel="stylesheet" href="{% static 'css/post_detail.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<!-- POST CARD -->
-<div class="card shadow-sm mb-4 border-0" style="border-radius:14px; overflow:hidden;">
-
-    <!-- IMAGE -->
-    {% if object.image %}
-        <div style="max-height:400px; overflow:hidden;">
-            <img src="{{ object.image.url }}" 
-                 style="width:100%; height:100%; object-fit:fill;">
+<!-- Hero Section -->
+<div class="post-hero">
+    <div class="post-hero-content">
+        <h1>{{ object.title }}</h1>
+        <div class="post-meta-hero">
+            <div class="post-author">
+                <div class="author-avatar">
+                    {{ object.author.username|first|upper }}
+                </div>
+                <div class="author-info">
+                    <div class="author-name">{{ object.author.username }}</div>
+                    <div class="post-date">{{ object.created_at|date:"F d, Y" }}</div>
+                </div>
+            </div>
+            <div class="post-stats-hero">
+                <div class="stat-badge">👁️ {{ object.views }} views</div>
+                <div class="stat-badge">💬 {{ object.comment_set.count }} comments</div>
+            </div>
         </div>
-    
-    {% else %}
-        
+    </div>
+</div>
+
+<!-- Main Content Container -->
+<div class="post-container">
+    <!-- Featured Image -->
+    {% if object.image %}
+    <img src="{{ object.image.url }}" alt="{{ object.title }}" class="post-featured-image">
     {% endif %}
 
-    <div class="card-body">
+    <!-- Post Body -->
+    <div class="post-body">
+        <div class="post-category">{{ object.category.name }}</div>
 
-        <!-- TITLE -->
-        <h2 class="fw-bold mb-2">{{ object.title }}</h2>
-
-        <!-- META -->
-        <!-- Add this near the meta section -->
-        <div class="d-flex justify-content-between text-muted mb-3">
-            <div>
-                <small>By {{ object.author }}</small>
-            </div>
-            <div>
-                <small class="me-3">👁️ {{ object.views }} views</small>
-                <small>{{ object.created_at|date:"M d, Y" }}</small>
-            </div>
+        <div class="post-content">
+            {{ object.content|linebreaks }}
         </div>
 
-        <!-- CATEGORY -->
-        <span class="badge bg-light text-dark border mb-3">
-            {{ object.category }}
-        </span>
-
-        <!-- CONTENT -->
-        <p class="card-text" style="line-height:1.7;">
-            {{ object.content }}
-        </p>
-
-        <hr>
-
-        <!-- ACTION BUTTONS -->
-        <div class="d-flex justify-content-between align-items-center mt-3">
-
-            <a href="{{ request.META.HTTP_REFERER|default:'/' }}" 
-               class="btn btn-light border btn-sm rounded-pill px-3">
-                ← Back
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="btn-action btn-back">
+                ← Back to Posts
             </a>
 
             {% if request.user == object.author %}
-                <div class="d-flex gap-2">
-                    <a href="{% url 'post_update' object.id %}" 
-                       class="btn btn-warning btn-sm rounded-pill px-3">
-                        ✏️ Edit
-                    </a>
-                    <a href="{% url 'post_delete' object.id %}" 
-                       class="btn btn-danger btn-sm rounded-pill px-3">
-                        🗑 Delete
-                    </a>
-                </div>
+            <div class="action-buttons">
+                <a href="{% url 'post_update' object.id %}" class="btn-action btn-edit">
+                    ✏️ Edit Post
+                </a>
+                <a href="{% url 'post_delete' object.id %}" class="btn-action btn-delete">
+                    🗑️ Delete Post
+                </a>
+            </div>
             {% endif %}
-
         </div>
-
     </div>
 </div>
 
-<!-- COMMENT FORM -->
-<div class="card shadow-sm mb-4 border-0" style="border-radius:12px;">
-    <div class="card-body">
-
-        <h5 class="mb-3">💬 Add Comment</h5>
-
-        {% if user.is_authenticated %}
-            <form id="comment-form">
-                {% csrf_token %}
-                
-                <textarea name="text" rows="3" 
-                          class="form-control mb-2" 
-                          placeholder="Write something meaningful..." required></textarea>
-
-                <button type="submit" 
-                        class="btn btn-primary btn-sm rounded-pill px-3">
-                    Post Comment
-                </button>
-            </form>
-        {% else %}
-            <p class="text-muted">Login to comment</p>
-        {% endif %}
-
+<!-- Comments Section -->
+<div class="comments-section">
+    <div class="comments-header">
+        <div class="comments-count">💬 Comments ({{ object.comment_set.count }})</div>
     </div>
-</div>
 
-<!-- COMMENTS LIST -->
-<div class="card shadow-sm border-0" style="border-radius:12px;">
-    <div class="card-body">
+    <!-- Comment Form -->
+    {% if user.is_authenticated %}
+    <div class="comment-form-card">
+        <form id="comment-form">
+            {% csrf_token %}
+            <textarea name="text" rows="4" placeholder="Share your thoughts..."></textarea>
+            <button type="submit" class="comment-submit">Post Comment</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="empty-comments">
+        <div class="empty-icon">🔐</div>
+        <p>Please <a href="{% url 'login' %}">login</a> to leave a comment.</p>
+    </div>
+    {% endif %}
 
-        <h5 class="mb-3">💬 Comments</h5>
-
-        <div id="comment-list">
-            {% for comment in comments %}
-                {% include "blog/reply.html" with comment=comment depth=0 %}
+    <!-- Comments List -->
+    <div id="comment-list" class="comment-list">
+        {% for comment in comments %}
+            {% include "blog/reply_modern.html" with comment=comment depth=0 %}
             {% empty %}
-                <p class="text-muted">No comments yet.</p>
-            {% endfor %}
-        </div>
+            <div class="empty-comments">
+                <div class="empty-icon">💬</div>
+                <p>No comments yet. Be the first to share your thoughts!</p>
+            </div>
+        {% endfor %}
     </div>
 </div>
 
-<script>
+{% endblock %}
 
-    let lastNotificationId = parseInt(localStorage.getItem("lastNotificationId") || 0);
-
-    window.onload = function () {
-        let hash = window.location.hash; // Gets #comment-123 from URL
-
-        if (hash) {
-            let el = document.querySelector(hash); // Finds element with that ID
-
-            if (el) {
-                el.scrollIntoView({ behavior: "smooth" }); // Scrolls to comment
-
-                // highlight effect
-                el.style.background = "#fff3cd";
-
-                setTimeout(() => {
-                    el.style.background = "";
-                }, 2000);
-            }
-        }
-    };
-
-    document.getElementById("comment-form").addEventListener("submit", function (e) {
-        e.preventDefault();
-        console.log("📝 Main comment submitted");
-        
-        let formData = new FormData(this);
-        
-        fetch(window.location.href, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCSRFToken(),
-            },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.html) {
-                const container = document.getElementById("comment-list");
-                container.innerHTML = data.html + container.innerHTML;
-                document.querySelector("textarea[name='text']").value = "";
-            }
-        })
-        //.catch(error => console.error("❌ Comment error:", error))
-    });
-
-    function getCSRFToken() {
-        return document.cookie.split("; ").find(row => row.startsWith("csrftoken")).split("=")[1];
-    }
-
-    document.addEventListener("submit", function (e) {
-        e.preventDefault();
-        let form = e.target;
-        if (e.target.id.startsWith("reply-form-")) {
-            e.preventDefault();
-            console.log("📝 Reply submitted");
-
-            let form = e.target
-            let formData = new FormData(form);
-            let parentId = form.querySelector("input[name='parent_id']").value;
-
-            fetch(window.location.href, {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log("Reply data", data)
-                if(data.html) {
-                    let container = document.getElementById("reply-list-" + parentId);
-                    if(container) {
-                        container.innerHTML = data.html + container.innerHTML;
-                    }
-                    form.style.display = "none";
-                    form.querySelector("textarea").value = "";
-                }
-
-            })
-            //.catch(error => console.error("❌ Reply error:", error))
-        }
-    });
-
-    function showReplyForm(commentId) {
-        let form = document.getElementById("reply-form-" + commentId);
-        if (form) {
-            if (form.style.display === "none" || form.style.display === "") {
-                form.style.display = "block";
-            } else {
-                form.style.display = "none";
-            }
-        }
-    }
-</script>
-
+{% block js %}
+    <script src="{% static 'js/post_details_modern.js' %}"></script>
 {% endblock %}
