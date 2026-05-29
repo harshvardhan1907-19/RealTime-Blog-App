@@ -202,7 +202,7 @@ else:
     # 1. Render clones your GitHub code
     # 2. Runs Build Command: pip install -r requirements.txt
     # 3. Runs: python manage.py collectstatic --noinput
-    #                     │
+    #             │
     #             ▼
     #  Django CREATES staticfiles/ folder
     #  (on Render's server, NOT on your PC)

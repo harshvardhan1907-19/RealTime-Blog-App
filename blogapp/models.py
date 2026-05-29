@@ -65,3 +65,18 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
+
+    followers = models.ManyToManyField(User, related_name="following", blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+    
+    def followers_count(self):  # ← Note the 's'
+        return self.followers.count()
+    
+    def following_count(self):
+        return self.user.following.count()
+    
+    def is_following(self, user):
+        return self.followers.filter(id=user.id).exists()

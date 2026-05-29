@@ -23,6 +23,9 @@ urlpatterns = [
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name="post_delete"),
     path('post/<int:pk>/like/', like_post, name='post_like'),
     path('profile/', profile_view, name='profile'),
+    path('profile/update/', profile_update, name='profile_update'),
+    path('profile/delete-pic/', delete_profile_pic, name='delete_profile_pic'),
+    path('profile/<str:username>/', profile_view, name='profile_detail'),
     path('api/posts/', api_post_list, name="api_post_list"),
     path('api/postget/<int:pk>', api_post_detail, name="api_post_detail"),
     path('api/postupdate/<int:pk>', api_post_update, name="api_post_update"),
@@ -44,8 +47,9 @@ urlpatterns = [
     path('password-change/', change_password, name="password_change"),
     path('password_change_done/', auth_views.PasswordChangeDoneView.as_view(template_name="blog/password_change_done.html"), name='password_change_done'),
 
-    path('profile/update/', profile_update, name='profile_update'),
-    path('profile/delete-pic/', delete_profile_pic, name='delete_profile_pic'),
+    path('follow/<str:username>/', follow_user, name='follow_user'),
+    path('unfollow/<str:username>/', unfollow_user, name='unfollow_user'),
+    path('check-follow/<str:username>/', check_follow_status, name='check_follow_status'),
 ]
 
 urlpatterns += router.urls # This line actually activates those routes

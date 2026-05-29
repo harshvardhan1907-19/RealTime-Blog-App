@@ -25,20 +25,30 @@ from .forms import *
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import Count
+import traceback
 
 @login_required
-def profile_view(request):
-    user = request.user
+def profile_view(request, username=None):
 
-    # create profile if doesn't exist
+    if username:
+        user = get_object_or_404(User, username=username)
+    else:
+        user = request.user
+
     profile, created = Profile.objects.get_or_create(user=user)
-    # img_url = profile.profile_pic.url
+
     user_posts = Post.objects.filter(author=user)
     liked_posts = user.liked_posts.all()
+    print("Total followers", profile.followers.count())
 
     total_posts = user_posts.count()
     total_likes = sum(post.total_likes() for post in user_posts)
     total_views = sum(post.views for post in user_posts)
+
+    is_following = False
+    if request.user.is_authenticated and request.user != user:
+        is_following = profile.followers.filter(id=request.user.id).exists()
+
     context = {
         'user': user,
         'profile': profile,
@@ -47,6 +57,7 @@ def profile_view(request):
         'total_posts': total_posts,
         'total_likes': total_likes,
         'total_views': total_views,
+        'is_following': is_following,
     }
 
     return render(request, "blog/profile.html", context)
@@ -147,6 +158,59 @@ def like_post(request, pk):
     return JsonResponse({
         'liked': liked,
         'total_likes': post.likes.count()
+    })
+
+@login_required
+def follow_user(request, username):
+    user_to_follow = get_object_or_404(User, username=username)
+    
+    if request.user == user_to_follow:
+        return JsonResponse({'error': 'You cannot follow yourself'}, status=400)
+    
+    # ✅ Get or create profile for the user to follow
+    profile_to_follow, created = Profile.objects.get_or_create(user=user_to_follow)
+    
+    # ✅ Add current user to followers (User object, not Profile)
+    profile_to_follow.followers.add(request.user)
+    
+    return JsonResponse({
+        'success': True,
+        'action': 'follow',
+        'followers_count': profile_to_follow.followers.count()
+    })
+
+@login_required
+def unfollow_user(request, username):
+    try:
+        user_to_unfollow = get_object_or_404(User, username=username)
+        
+        # if request.user == user_to_unfollow:
+        #     return JsonResponse({'error': 'You cannot unfollow yourself'}, status=400)
+        
+        # ✅ Get the profile
+        profile_to_unfollow = user_to_unfollow.profile
+        
+        # ✅ Remove current user from followers
+        profile_to_unfollow.followers.remove(request.user)
+        
+        return JsonResponse({
+            'success': True,
+            'action': 'unfollow',
+            'followers_count': profile_to_unfollow.followers.count()
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def check_follow_status(request, username):
+    user_to_check = get_object_or_404(User, username=username)
+    
+    # ✅ Check if current user is in the followers list
+    is_following = user_to_check.profile.followers.filter(id=request.user.id).exists()
+    
+    return JsonResponse({
+        'is_following': is_following,
+        'followers_count': user_to_check.profile.followers.count()
     })
 
 class PostCreateView(LoginRequiredMixin, CreateView):

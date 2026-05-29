@@ -19,15 +19,15 @@
             <!-- Avatar with Upload Overlay -->
             <div class="avatar-wrapper">
                 {% if profile.profile_pic %}
-                    <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="profile-avatar-large">
+                    <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="profile-avatar-large" onclick="openImageModal(this.src);" style="cursor: pointer;">
                 {% else %}
-                    <div class="default-avatar-large">
+                    <div class="default-avatar-large" onclick="openImageModal(null, '{{ user.username}}')" style="cursor: pointer;">
                         {{ user.username|make_list|first|upper }}
                     </div>
                 {% endif %}
-                <div class="avatar-overlay" onclick="location.href='{% url 'profile_update' %}'">
+                {% comment %} <div class="avatar-overlay" onclick="location.href='{% url 'profile_update' %}'">
                     <span>📷 Change</span>
-                </div>
+                </div> {% endcomment %}
             </div>
             
             <h2 style="margin-top: 0.5rem;">{{ user.get_full_name|default:user.username }}</h2>
@@ -38,10 +38,10 @@
                 <div class="profile-bio">
                     {{ profile.bio }}
                 </div>
-            {% else %}
+            {% comment %} {% else %}
                 <div class="profile-bio" style="background: transparent; padding: 0;">
                     <a href="{% url 'profile_update' %}" style="color: blue;">Add a bio</a>
-                </div>
+                </div> {% endcomment %}
             {% endif %}
             
             <!-- Stats Grid -->
@@ -51,34 +51,49 @@
                     <div class="stat-label">Posts</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">{{ total_likes }}</div>
-                    <div class="stat-label">Likes Received</div>
+                    <div class="stat-number" id="followers-count">{{ profile.followers_count }}</div>
+                    <div class="stat-label">Followers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ profile.following_count }}</div>
+                    <div class="stat-label">Following</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">{{ total_views }}</div>
-                    <div class="stat-label">Total Views</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ liked_posts|length }}</div>
-                    <div class="stat-label">Liked Posts</div>
+                    <div class="stat-label">Views</div>
                 </div>
             </div>
-            
-            <!-- Action Buttons -->
-            <div class="profile-actions">
-                <a href="{% url 'profile_update' %}" class="btn-profile btn-primary-profile">
-                    ✏️ Edit Profile
-                </a>
-                <a href="{% url 'password_change' %}" class="btn-profile btn-outline-profile">
-                    🔑 Change Password
-                </a>
-                <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-profile btn-danger-profile">
-                        🚪 Logout
+
+            {% if request.user != profile.user %}
+                <div class="follow-section">
+                    <button id="follow-btn" class="btn-follow" data-username="{{ profile.user.username }}" 
+                        style="{% if is_following %}background: #22c55e;{% else %}background: linear-gradient(135deg, #667eea, #764ba2);{% endif %}">
+                        {% if is_following %}
+                            Following ✓
+                        {% else %}
+                            Follow +
+                        {% endif %}
                     </button>
-                </form>
-            </div>
+                </div>
+            {% endif %}
+            
+            {% if request.user == profile.user %}
+            <!-- Action Buttons -->
+                <div class="profile-actions">
+                    <a href="{% url 'profile_update' %}" class="btn-profile btn-primary-profile">
+                        ✏️ Edit Profile
+                    </a>
+                    <a href="{% url 'password_change' %}" class="btn-profile btn-outline-profile">
+                        🔑 Change Password
+                    </a>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline; margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-profile btn-danger-profile">
+                            🚪 Logout
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
         </div>
     </div>
     
@@ -153,6 +168,54 @@
             document.getElementById('liked-tab').classList.add('active');
             document.getElementById('posts-tab').classList.remove('active');
         }
+    }
+
+    const followBtn = document.getElementById("follow-btn");
+    if (followBtn) {
+        followBtn.addEventListener("click", function() {
+            const username = this.dataset.username;
+            const isFollowing = this.textContent.trim() === "Following ✓";
+            const url = isFollowing ?  `/unfollow/${username}/` : `/follow/${username}/`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken(),
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.action === 'follow') {
+                        followBtn.textContent = 'Following ✓';
+                        followBtn.style.background = '#22c55e';
+                    } else {
+                        followBtn.textContent = 'Follow +';
+                        followBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                    }
+
+                    const followersCount = document.getElementById("followers-count");
+                    if (followersCount) {
+                        followersCount.textContent = data.followers_count;
+                    }
+                } else if (data.error) {
+                    console.error("Error:", data.error);
+                    alert(data.error);
+                }
+            })
+
+            .catch(error => {
+                console.error("Fetch error:", error);
+                alert("Something went wrong. Please try again.");
+            });
+        })
+
+    }
+
+    function getCSRFToken() {
+        return document.cookie.split('; ')
+            .find(row => row.startsWith('csrftoken'))
+            ?.split('=')[1];
     }
 </script>
 {% endblock %}

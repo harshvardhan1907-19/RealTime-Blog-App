@@ -20,7 +20,8 @@
                 <div class="post-card-author-img">
                     {{ post.author.username|first|upper }}
                 </div>
-                <span>{{ post.author.username }}</span>
+                <!-- <span>{{ post.author.username }}</span> -->
+                <a href="{% url 'profile_detail' post.author.username %}" style="text-decoration: none; color: #41474c; font-weight: 500;">{{ post.author.username }}</a>
             </div>
             <span>{{ post.created_at|date:"M d, Y" }}</span>
         </div>

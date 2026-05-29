@@ -28,12 +28,12 @@
                         
                         {% if user.is_authenticated %}
                             <!-- LOGGED IN USER - Show profile pic or letter avatar -->
-                            {% if user.profile.profile_pic %}
-                                <img src="{{ user.profile.profile_pic.url }}" alt="Avatar"
+                            {% if request.user.profile.profile_pic %}
+                                <img src="{{ request.user.profile.profile_pic.url }}" alt="Avatar"
                                     style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
                             {% else %}
                                 <div style="width: 32px; height: 32px; background: #667eea; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white;">
-                                    {{ user.username|make_list|first|upper }}
+                                    {{ request.user.username|make_list|first|upper }}
                                 </div>
                             {% endif %}
                         {% else %}
@@ -42,7 +42,7 @@
                                 style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
                         {% endif %}
                         
-                        <span class="ms-1">{{ user.username|default:'Guest' }}</span>
+                        <span class="ms-1">{{ request.user.username|default:'Guest' }}</span>
                     </button>
                     
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -97,6 +97,22 @@
     <div class="container mt-4">
         {% block content %}
         {% endblock %}
+    </div>
+    
+    <!-- Image Modal Popup -->
+    <div id="imageModal" class="image-modal" style="display: none;">
+        <div class="image-modal-content">
+            <div class="image-modal-header">
+                <h3>📸 Profile Picture</h3>
+                <button class="image-modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="image-modal-body">
+                <img id="modalImage" src="" alt="Profile Picture">
+            </div>
+            <div class="image-modal-footer">
+                <button class="modal-close-btn" id="modalCloseBtn">Close</button>
+            </div>
+        </div>
     </div>
 
     <!-- Link to your existing notification.js -->
