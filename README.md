@@ -63,15 +63,88 @@ A **feature-rich, production-ready blog platform** built with Django that provid
 ## 📸 Screenshots
 
 ### Homepage with Modern Grid Layout
-![Homepage](screenshots/homepage.png)
+![Homepage](https://github.com/user-attachments/assets/273b004b-d6a1-4486-9425-8a231d69ebd4)
 
 ### Real-time Notification
-![Notification](screenshots/notification.png)
+![Notification](https://github.com/user-attachments/assets/d974ab64-6476-4102-afd5-52f4ffc3271c)
 
 ### User Profile with Follow System
-![Profile](screenshots/profile.png)
+![Profile](https://github.com/user-attachments/assets/d0960718-5211-4c59-85fa-a7f8320c47e0)
 
 ### Post Detail with Comments
-![Post Detail](screenshots/post-detail.png)
+![Post Detail](https://github.com/user-attachments/assets/de6b69b9-af37-48cf-ace1-af5345a12608)
 
 ## 🏗️ Project Structure
+
+blog_project/
+├── blogapp/ # Main application
+│ ├── static/ # Static files (CSS, JS, images)
+│ │ ├── css/
+│ │ ├── js/
+│ │ └── images/
+│ ├── templates/ # HTML templates
+│ │ └── blog/
+│ ├── migrations/ # Database migrations
+│ ├── models.py # Database models
+│ ├── views.py # View logic
+│ ├── consumers.py # WebSocket consumers
+│ ├── routing.py # WebSocket URL routing
+│ ├── forms.py # Custom forms
+│ ├── backends.py # Custom authentication backend
+│ └── context_processors.py # Global context
+├── blogproject/ # Project configuration
+│ ├── settings.py # Django settings
+│ ├── urls.py # URL configuration
+│ └── asgi.py # ASGI config for WebSockets
+├── staticfiles/ # Collected static files (production)
+├── media/ # User-uploaded media (local development)
+├── manage.py # Django management script
+├── requirements.txt # Python dependencies
+└── runtime.txt # Python version specification
+
+
+## 📊 Database Schema
+
+- **User** - Django's built-in User model
+- **Profile** - Extended user profile with bio, profile picture, followers
+- **Post** - Blog posts with title, content, image, category, likes, views
+- **Comment** - Nested comments with parent-child relationship
+- **Notification** - User notifications with read/unread status
+- **Category** - Post categories
+- **Follow** - User follow relationships (via ManyToMany)
+
+## 🚀 Installation
+
+### Prerequisites
+- Python 3.11+
+- pip
+- Virtual environment (recommended)
+
+### Step-by-Step Setup
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/harshvardhan1907-19/RealTime-Blog-App.git
+cd RealTime-Blog-App
+
+2. Create virtual environment
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Mac/Linux
+python -m venv venv
+source venv/bin/activate
+
+3. Install dependencies
+pip install -r requirements.txt
+
+4. Set up environment variables
+# Create .env file
+echo "DATABASE_URL=sqlite:///db.sqlite3" > .env
+
+5. Create superuser
+python manage.py createsuperuser
+
+6. Run Development server
+python -m daphne blogproject.asgi:application
