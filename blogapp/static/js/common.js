@@ -1,8 +1,8 @@
-setTimeout(function() {
+setTimeout(function () {
     let alerts = document.querySelectorAll('.alert');
-    alerts.forEach(function(alert) {
-    let bsAlert = new bootstrap.Alert(alert);
-    bsAlert.close();
+    alerts.forEach(function (alert) {
+        let bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
     });
 }, 3000);
 
@@ -17,7 +17,7 @@ function openImageModal(imageUrl, username = null) {
     } else {
         // if not image shoe default avatar
         modalImage.style.display = "none";
-        
+
         const modalBody = document.querySelector(".image-modal-body");
         const existingDefault = document.querySelector(".modal-default-avatar");
 
@@ -28,8 +28,8 @@ function openImageModal(imageUrl, username = null) {
                     ${username ? username.charAt(0).toUpperCase() : '?'}
                 </div>
                 <p style="color: white; margin-top: 1rem;">No profile picture set</p>`;
-            
-                modalBody.appendChild(defaultDiv)
+
+            modalBody.appendChild(defaultDiv)
         }
     }
     modal.style.display = "flex";
@@ -48,7 +48,7 @@ function closeImageModal() {
     modal.style.display = "none";
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("imageModal");
     const closeBtn = document.getElementById("closeModalBtn");
     const modalCloseBtn = document.getElementById("modalCloseBtn");
@@ -74,4 +74,4 @@ document.addEventListener("DOMContentLoaded", function() {
             closeImageModal();
         }
     });
-})
+});

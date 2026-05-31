@@ -6,6 +6,13 @@
 <link rel="stylesheet" href="{% static 'css/post_list.css' %}">
 {% endblock %}
 
+{% block favicon %}
+    <!-- <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>"> -->
+
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/list.png' %}">
+{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
 <div class="hero-section">

@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
     {% if object %}Update Post{% else %}Create Post{% endif %}
+{% endblock %}
+
+{% block favicon %}
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/create.png' %}">
 {% endblock %}
 
 {% block content %}

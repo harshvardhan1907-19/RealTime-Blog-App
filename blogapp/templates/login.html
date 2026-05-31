@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Login - BlogApp{% endblock %}
+{% block favicon %}
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/login.png' %}">
+{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
