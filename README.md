@@ -46,7 +46,7 @@ A **feature-rich, production-ready blog platform** built with Django that provid
 - 🔄 **REST API** - Ready for mobile app integration
 - 🛡️ **Security** - CSRF protection, secure cookies, production-ready settings
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack 
 
 | Technology | Purpose |
 |------------|---------|
