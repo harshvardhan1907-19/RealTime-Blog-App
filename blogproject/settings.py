@@ -183,13 +183,6 @@ if IS_PRODUCTION:
     }
     CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
     # It's a connection string that contains all your Cloudinary credentials in one line:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') # Best practice
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') # Best practice
-    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 else:
     # Local development - Use local file storage
     DEBUG = True
@@ -203,16 +196,15 @@ else:
     }
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'blogapp' /'media'
-    # Email Configuration (for production)
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = 'rh7805751@gmail.com'
-    EMAIL_HOST_PASSWORD = 'ibnsopjwtucbuojs'
-    DEFAULT_FROM_EMAIL = 'rh7805751@gmail.com'
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
     # When you deploy to Render:
 
