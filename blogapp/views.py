@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Post, Comment, Category, Notification, Profile
+from .models import PasswordResetOTP, Post, Comment, Category, Notification, Profile
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin 
@@ -25,7 +25,139 @@ from .forms import *
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import Count
-import traceback
+import random
+import string
+from datetime import datetime, timedelta
+from django.core.mail import send_mail
+from django.conf import settings
+
+def generate_otp():
+    """Generate 6-digit OTP"""
+    return ''.join(random.choices(string.digits, k=6))
+
+def forgot_password(request):
+    """Step 1: Get email/username and send OTP"""
+    if request.method == 'POST':
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            email_or_username = form.cleaned_data['email_or_username']
+            
+            # Find user by email or username
+            try:
+                if '@' in email_or_username:
+                    user = User.objects.get(email=email_or_username)
+                else:
+                    user = User.objects.get(username=email_or_username)
+            except User.DoesNotExist:
+                messages.error(request, 'No account found with this email/username')
+                return render(request, 'blog/forgot_password.html', {'form': form})
+            
+            # Generate and save OTP
+            otp = generate_otp()
+            PasswordResetOTP.objects.create(user=user, otp=otp)
+            
+            # Send OTP via email (if user has email)
+            if user.email:
+                try:
+                    send_mail(
+                        subject='Password Reset OTP - BlogApp',
+                        message=f'Hello {user.username},\n\nYour OTP for password reset is: {otp}\n\nThis OTP is valid for 10 minutes.\n\nIf you did not request this, please ignore this email.\n\nThanks,\nBlogApp Team',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                    )
+                    messages.success(request, f'OTP sent to {user.email}')
+                except Exception as e:
+                    print(f"Email error: {e}")
+                    messages.warning(request, f'OTP generated but email could not be sent. Use this OTP: {otp}')
+            else:
+                messages.warning(request, f'No email registered. Use this OTP: {otp}')
+            
+            # Store user_id in session for next steps
+            request.session['reset_user_id'] = user.id
+            return redirect('verify_otp')
+    else:
+        form = ForgotPasswordForm()
+    
+    return render(request, 'blog/forgot_password.html', {'form': form})
+
+def verify_otp(request):
+    """Step 2: Verify OTP"""
+    user_id = request.session.get('reset_user_id')
+    
+    if not user_id:
+        messages.error(request, 'Session expired. Please start over.')
+        return redirect('forgot_password')
+    
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        messages.error(request, 'User not found')
+        return redirect('forgot_password')
+    
+    if request.method == 'POST':
+        form = VerifyOtpForm(request.POST)
+        if form.is_valid():
+            otp = form.cleaned_data['otp']
+            
+            try:
+                otp_record = PasswordResetOTP.objects.get(user=user, otp=otp, is_used=False)
+                
+                if otp_record.is_valid():
+                    # Mark OTP as used
+                    otp_record.is_used = True
+                    otp_record.save()
+                    
+                    messages.success(request, 'OTP verified! Set your new password.')
+                    print("Exiting from otp verification")
+                    return redirect('set_new_password')
+                else:
+                    messages.error(request, 'OTP has expired. Please request a new one.')
+                    return redirect('forgot_password')
+            except PasswordResetOTP.DoesNotExist:
+                messages.error(request, 'Invalid OTP. Please try again.')
+    else:
+        form = VerifyOtpForm()
+    
+    return render(request, 'blog/verify_otp.html', {'form': form, 'email': user.email})
+
+def set_new_password(request):
+    """Step 3: Set new password"""
+    print("Entering into set password function")
+    user_id = request.session.get('reset_user_id')
+    
+    if not user_id:
+        messages.error(request, 'Session expired. Please start over.')
+        return redirect('forgot_password')
+    
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        messages.error(request, 'User not found')
+        return redirect('forgot_password')
+    
+    if request.method == 'POST':
+        print("Processing new password form submission")
+        form = SetNewPasswordForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password1']
+            user.set_password(new_password)
+            user.save()
+            print("Done")
+            
+            # Clear session
+            del request.session['reset_user_id']
+            
+            print("Wait process")
+            messages.success(request, 'Password reset successfully! Please login with your new password.')
+            print("✅ Password reset successful for user:", user.username)
+            return redirect('login')
+        else:
+            print("❌ FORM VALIDATION FAILED:", form.errors)
+    else:
+        form = SetNewPasswordForm()
+    
+    return render(request, 'blog/set_new_password.html', {'form': form})
 
 @login_required
 def profile_view(request, username=None):

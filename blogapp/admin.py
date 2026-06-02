@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Post, Comment, Category, Notification, Profile
+from .models import PasswordResetOTP, Post, Comment, Category, Notification, Profile
 
 # admin.site.register(Post)
 admin.site.register(Comment)
 admin.site.register(Category)
 admin.site.register(Notification)
 admin.site.register(Profile)
+admin.site.register(PasswordResetOTP)
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):

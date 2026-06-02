@@ -46,6 +46,9 @@ urlpatterns = [
     # path('password-change/', auth_views.PasswordChangeView.as_view(template_name="blog/password_change.html"), name="password_change"),
     path('password-change/', change_password, name="password_change"),
     path('password_change_done/', auth_views.PasswordChangeDoneView.as_view(template_name="blog/password_change_done.html"), name='password_change_done'),
+    path('forgot-password/', forgot_password, name='forgot_password'),
+    path('verify-otp/', verify_otp, name='verify_otp'),
+    path('set-new-password/', set_new_password, name='set_new_password'),
 
     path('follow/<str:username>/', follow_user, name='follow_user'),
     path('unfollow/<str:username>/', unfollow_user, name='unfollow_user'),
