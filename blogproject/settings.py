@@ -175,8 +175,10 @@ LOGOUT_REDIRECT_URL = "login"
 # Determine if we're running on Render (production) or locally
 # Determine if running on Render (production)
 
+# ========== EMAIL CONFIGURATION ==========
+
 if IS_PRODUCTION:
-    # Production (Render) - Use Cloudinary
+    # Production (Render) - Use Brevo
     DEBUG = False
     STORAGES = {
         "default": {
@@ -188,15 +190,22 @@ if IS_PRODUCTION:
     }
     CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
 
+    # ✅ FIXED: Brevo Email Configuration
     INSTALLED_APPS += ['anymail']
-    EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+    
+    EMAIL_BACKEND = 'anymail.backends.sendinblue.EmailBackend'  # Note: 'sendinblue', not 'brevo'
+    
     ANYMAIL = {
-        'BREVO_API_KEY': os.environ.get('BREVO_API_KEY'),
+        'SENDINBLUE_API_KEY': os.environ.get('BREVO_API_KEY'),  # Your API key
     }
-    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'sagarharshvardhan6@gmail.com')
+    
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
+    
+    # Optional: For testing, set to False to see errors
+    EMAIL_FAIL_SILENTLY = False
 
 else:
-    # Local development - Use local file storage
+    # Local development - Use Gmail
     DEBUG = True
     STORAGES = {
         "default": {
@@ -207,8 +216,9 @@ else:
         },
     }
     MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'blogapp' /'media'
+    MEDIA_ROOT = BASE_DIR / 'blogapp' / 'media'
 
+    # Gmail Configuration (for local testing)
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_PORT = 587
@@ -216,7 +226,6 @@ else:
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
     DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
-
     # When you deploy to Render:
 
     # 1. Render clones your GitHub code
