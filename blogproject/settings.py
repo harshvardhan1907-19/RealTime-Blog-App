@@ -191,7 +191,7 @@ if IS_PRODUCTION:
     INSTALLED_APPS += ['anymail']
     EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
     ANYMAIL = {
-        'BREVO_API_KEY': 'xsmtpsib-738ef89a49a2e75e593e5273197d29d7158f768e358b90a86fc3be721f21a611-cy5d6IEsMlyrBBa6',
+        'BREVO_API_KEY': os.environ.get('BREVO_API_KEY'),
     }
     DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'sagarharshvardhan6@gmail.com')
 
