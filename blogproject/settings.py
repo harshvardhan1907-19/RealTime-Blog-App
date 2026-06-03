@@ -55,7 +55,12 @@ CLOUDINARY_APPS = [
     'cloudinary',
 ]
 
-IS_PRODUCTION = os.environ.get('DATABASE_URL') is not None
+# IS_PRODUCTION = os.environ.get('DATABASE_URL') is not None
+# "Does this environment have a database connection string?"	No. If you haven't attached a live PostgreSQL database yet, this fails.
+
+
+# This is an absolute "Yes" or "No" check
+IS_PRODUCTION = 'RENDER' in os.environ
 
 if IS_PRODUCTION:
     INSTALLED_APPS = BASE_APPS + CLOUDINARY_APPS
@@ -188,6 +193,7 @@ if IS_PRODUCTION:
     ANYMAIL = {
         'BREVO_API_KEY': os.environ.get('BREVO_API_KEY'),
     }
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'sagarharshvardhan6@gmail.com')
 
 else:
     # Local development - Use local file storage
@@ -209,8 +215,7 @@ else:
     EMAIL_USE_TLS = True
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-
-DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
     # When you deploy to Render:
 
