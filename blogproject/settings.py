@@ -182,7 +182,13 @@ if IS_PRODUCTION:
         },
     }
     CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
-    # It's a connection string that contains all your Cloudinary credentials in one line:
+
+    INSTALLED_APPS += ['anymail']
+    EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+    ANYMAIL = {
+        'BREVO_API_KEY': os.environ.get('BREVO_API_KEY'),
+    }
+
 else:
     # Local development - Use local file storage
     DEBUG = True
@@ -197,14 +203,13 @@ else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'blogapp' /'media'
 
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
     # When you deploy to Render:
 
@@ -223,5 +228,3 @@ DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
     #             ▼
     #  Your site serves images from /static/ URL
     #  (but files are actually in staticfiles/ folder on server)
-
-
