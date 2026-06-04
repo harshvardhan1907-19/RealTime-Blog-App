@@ -61,6 +61,9 @@ CLOUDINARY_APPS = [
 
 # This is an absolute "Yes" or "No" check
 IS_PRODUCTION = os.environ.get("RENDER_EXTERNAL_HOSTNAME") is not None
+# Ye check karta hai:
+# Kya Render ne hostname assign kiya hai? 
+# RENDER_EXTERNAL_HOSTNAME=realtime-blog-app.onrender.com
 
 if IS_PRODUCTION:
     INSTALLED_APPS = BASE_APPS + CLOUDINARY_APPS
