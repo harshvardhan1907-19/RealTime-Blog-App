@@ -60,7 +60,7 @@ CLOUDINARY_APPS = [
 
 
 # This is an absolute "Yes" or "No" check
-IS_PRODUCTION = 'RENDER' in os.environ
+IS_PRODUCTION = os.environ.get("RENDER_EXTERNAL_HOSTNAME") is not None
 
 if IS_PRODUCTION:
     INSTALLED_APPS = BASE_APPS + CLOUDINARY_APPS
@@ -192,7 +192,7 @@ if IS_PRODUCTION:
     INSTALLED_APPS += ['anymail']
     EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
     ANYMAIL = {
-        'BREVO_API_KEY': os.environ.get('BREVO_API_KEY'),
+        'BREVO_API_KEY': os.environ.get('BREVO_SMTP_KEY'),
     }
     # Direct fallback to your verified Brevo sender email
     DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'sagarharshvardhan6@gmail.com')
