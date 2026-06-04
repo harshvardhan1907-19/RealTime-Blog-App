@@ -42,14 +42,6 @@ def forgot_password(request):
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
             email_or_username = form.cleaned_data['email_or_username']
-            import os
-
-            print("RENDER =", os.environ.get("RENDER"))
-            print("BREVO_API_KEY =", os.environ.get("BREVO_API_KEY"))
-            print("EMAIL_HOST_USER =", os.environ.get("EMAIL_HOST_USER"))
-            from blogproject.settings import IS_PRODUCTION
-
-            print("IS_PRODUCTION =", IS_PRODUCTION)
             
             # Find user by email or username
             try:

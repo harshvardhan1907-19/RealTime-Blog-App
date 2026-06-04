@@ -194,8 +194,6 @@ if IS_PRODUCTION:
     ANYMAIL = {
         'BREVO_API_KEY': os.environ.get('BREVO_SMTP_KEY'),
     }
-    print("ANYMAIL =", ANYMAIL)
-    print("EMAIL_HOST_USER ===", os.environ.get('BREVO_SMTP_KEY'))
     # Direct fallback to your verified Brevo sender email
     DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'sagarharshvardhan6@gmail.com')
 
