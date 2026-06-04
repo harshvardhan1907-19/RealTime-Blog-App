@@ -173,8 +173,7 @@ LOGOUT_REDIRECT_URL = "login"
 
 # ========== STORAGE CONFIGURATION (ONLY ONCE) ==========
 # Determine if we're running on Render (production) or locally
-# Determine if running on Render (production)
-
+# ========== STORAGE & EMAIL CONFIGURATION ==========
 if IS_PRODUCTION:
     # Production (Render) - Use Cloudinary
     DEBUG = False
@@ -188,17 +187,14 @@ if IS_PRODUCTION:
     }
     CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
 
-    # ✅ CORRECT Brevo SMTP Configuration (No Anymail needed)
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp-relay.brevo.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = os.environ.get('BREVO_SMTP_LOGIN')
-    EMAIL_HOST_PASSWORD = os.environ.get('BREVO_SMTP_KEY')
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
-    
-    # For debugging - show errors
-    EMAIL_FAIL_SILENTLY = False
+    # Production Email via Brevo API
+    INSTALLED_APPS += ['anymail']
+    EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+    ANYMAIL = {
+        'BREVO_API_KEY': os.environ.get('BREVO_API_KEY'),
+    }
+    # Direct fallback to your verified Brevo sender email
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'sagarharshvardhan6@gmail.com')
 
 else:
     # Local development - Use local file storage
@@ -214,10 +210,18 @@ else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'blogapp' / 'media'
 
-    # Local development email (prints to console)
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    # When you deploy to Render:
+    # Local Email via Gmail SMTP
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
 
+
+
+    # When you deploy to Render:
     # 1. Render clones your GitHub code
     # 2. Runs Build Command: pip install -r requirements.txt
     # 3. Runs: python manage.py collectstatic --noinput
