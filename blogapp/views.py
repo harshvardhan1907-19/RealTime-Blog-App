@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+
+from blogproject.settings import IS_PRODUCTION
 from .models import PasswordResetOTP, Post, Comment, Category, Notification, Profile
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -41,6 +43,12 @@ def forgot_password(request):
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
             email_or_username = form.cleaned_data['email_or_username']
+            import os
+
+            print("RENDER =", os.environ.get("RENDER"))
+            print("BREVO_API_KEY =", os.environ.get("BREVO_API_KEY"))
+            print("EMAIL_HOST_USER =", os.environ.get("EMAIL_HOST_USER"))
+            print("IS_PRODUCTION =", IS_PRODUCTION)
             
             # Find user by email or username
             try:

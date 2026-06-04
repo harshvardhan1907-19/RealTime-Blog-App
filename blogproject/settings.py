@@ -175,6 +175,7 @@ LOGOUT_REDIRECT_URL = "login"
 # Determine if we're running on Render (production) or locally
 # ========== STORAGE & EMAIL CONFIGURATION ==========
 if IS_PRODUCTION:
+    print("IS_PRODUCTION live =", IS_PRODUCTION)
     # Production (Render) - Use Cloudinary
     DEBUG = False
     STORAGES = {
@@ -198,6 +199,7 @@ if IS_PRODUCTION:
 
 else:
     # Local development - Use local file storage
+    print("IS_PRODUCTION local =", IS_PRODUCTION)
     DEBUG = True
     STORAGES = {
         "default": {
