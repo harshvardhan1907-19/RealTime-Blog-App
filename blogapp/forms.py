@@ -68,6 +68,8 @@ class PasswordChange(PasswordChangeForm):
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
+        # Purpose: The Meta class tells Django which model and which fields to use.
+        # Analogy: Instructions for the form builder.
         model = Profile
         fields = ['profile_pic', 'bio']
         widgets = {

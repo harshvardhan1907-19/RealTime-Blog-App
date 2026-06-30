@@ -198,6 +198,8 @@ def profile_view(request, username=None):
 @login_required
 def profile_update(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
+    # profile   The Profile object (existing OR newly created)	<Profile: harsh's Profile>
+    # created   Boolean: True if NEW, False if EXISTING	        True or False
 
     if request.method == "POST":
         form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
@@ -286,7 +288,7 @@ def like_post(request, pk):
                 }
             )
 
-            print(f"✅ Sent like notification with ID: {notification.id}")  # ← Add this debug
+            print(f"✅ Sent like notification with ID: {notification.id}")
 
     return JsonResponse({
         'liked': liked,

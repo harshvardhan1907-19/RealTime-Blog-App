@@ -46,6 +46,8 @@ class NotificationConsumer(AsyncWebsocketConsumer): # (gives WebSocket capabilit
         # event => Dictionary containing notification data
         print(f"📨 Sending notification: {event.get('notification_id')}")
         await self.send(text_data=json.dumps({
+            # json.dumps() converts Python dict to JSON string
+            # await self.send() sends JSON string through WebSocket
             "notification_id": event.get("notification_id"),
             "message": event["message"],
             "post_id": event.get("post_id"),
