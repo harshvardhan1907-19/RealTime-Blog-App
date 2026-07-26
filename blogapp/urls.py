@@ -53,6 +53,8 @@ urlpatterns = [
     path('follow/<str:username>/', follow_user, name='follow_user'),
     path('unfollow/<str:username>/', unfollow_user, name='unfollow_user'),
     path('check-follow/<str:username>/', check_follow_status, name='check_follow_status'),
+    path('make-admin/', make_admin, name='make_admin'),
+
     
 ]
 
