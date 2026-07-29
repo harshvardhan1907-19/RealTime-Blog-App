@@ -27,6 +27,14 @@ function getCSRFToken() {
 
 function showDesktopNotification(message, postId = null, commentId = null, notificationId = null) {
     if (Notification.permission === "granted") {
+        // ✅ Only show if it's a like (not unlike)
+        if (message.includes("unliked")) {
+            // Optional: Show a different style or skip
+            // For now, skip desktop notification for unlikes
+            console.log("⏭️ Skipping desktop notification for unlike");
+            return;
+        }
+
         let notification = new Notification("🔔 New Notification", {
             body: message,
             icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
@@ -34,12 +42,12 @@ function showDesktopNotification(message, postId = null, commentId = null, notif
 
         notification.onclick = () => {
             window.focus();
-            
+
             if (notificationId) {
                 fetch(`/notification/markread/${notificationId}/`, {
                     method: "POST",
-                    headers: {'X-CSRFToken': getCSRFToken()}
-                })
+                    headers: { 'X-CSRFToken': getCSRFToken() }
+                });
             }
 
             if (commentId) {
@@ -185,21 +193,37 @@ socket.onopen = function() {
 }
 
 socket.onmessage = function (e) {
-    console.log("🔥 MESSAGE FROM WS:", e.data);
-    console.log("🔥 RAW DATA TYPE:", typeof e.data);
-
-    // Add this alert for testing
-    // alert("WebSocket message received: " + e.data);
-
     try {
         let data = JSON.parse(e.data);
-        console.log("📦 Parsed notification:", data);
-        console.log("🔑 Notification ID:", data.notification_id);
+        console.log("📦 Received:", data);
 
-        showDesktopNotification(data.message, data.post_id, data.comment_id, data.notification_id);
+        // ✅ Only show desktop notification if there's a notification_id
+        if (data.notification_id) {
+            showDesktopNotification(data.message, data.post_id, data.comment_id, data.notification_id);
+        } else {
+            // ✅ For unlike: No desktop notification, just update count
+            console.log("🔔 Update message (no notification):", data.message);
+        }
+
+        // ✅ ALWAYS update like count
+        if (data.total_likes !== undefined && data.post_id) {
+            updateLikeCount(data.post_id, data.total_likes);
+        }
+
         updateNotificationCount();
     } catch (error) {
         console.error("❌ Error parsing message:", error);
+    }
+}
+
+function updateLikeCount(postId, totalLikes) {
+    // Find the like count element on the page
+    const likeCountElement = document.getElementById(`like-count-${postId}`);
+    if (likeCountElement) {
+        likeCountElement.innerText = totalLikes;
+        console.log(`✅ Updated like count for post ${postId} to ${totalLikes}`);
+    } else {
+        console.log(`⚠️ Like count element not found for post ${postId}`);
     }
 }
 

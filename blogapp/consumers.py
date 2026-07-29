@@ -8,14 +8,6 @@ class NotificationConsumer(AsyncWebsocketConsumer): # (gives WebSocket capabilit
     async def connect(self):
         user = self.scope["user"]   # ✅ define first
 
-        # self.scope = {
-        #     "user": <User Object>,           # The logged-in user
-        #     "path": "/ws/notifications/",    # WebSocket URL
-        #     "headers": [...],                # HTTP headers (cookies, etc.)
-        #     "session": {...},                # Django session data
-        #     "client": ["127.0.0.1", 54321],  # Client IP and port
-        # }
-
         if user.is_anonymous:
             await self.close()
             return
@@ -46,10 +38,18 @@ class NotificationConsumer(AsyncWebsocketConsumer): # (gives WebSocket capabilit
         # event => Dictionary containing notification data
         print(f"📨 Sending notification: {event.get('notification_id')}")
         await self.send(text_data=json.dumps({
-            # json.dumps() converts Python dict to JSON string
-            # await self.send() sends JSON string through WebSocket
+            "type": "notification",
             "notification_id": event.get("notification_id"),
             "message": event["message"],
             "post_id": event.get("post_id"),
             "comment_id": event.get("comment_id"),
+            "total_likes": event.get("total_likes"),
         }))
+
+    # async def update_like_count(self, event):
+    #     print(f"👍 Updating like count for Post {event.get('post_id')}: {event.get('new_count')}")
+    #     await self.send(text_data = json.dumps({
+    #         "type": "update_like_count",
+    #         "post_id": event.get("post_id"),
+    #         "new_count": event.get("new_count"),
+    #     }))

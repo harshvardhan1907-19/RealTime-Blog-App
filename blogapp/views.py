@@ -260,35 +260,50 @@ def register(request):
 def like_post(request, pk):
     post = get_object_or_404(Post, id=pk)
 
+    # Check if user already liked
     if request.user in post.likes.all():
+        # UNLIKE - remove the like
         post.likes.remove(request.user)
         liked = False
     else:
+        # LIKE - add the like
         post.likes.add(request.user)
         liked = True
 
-        if post.author != request.user:
+    # ✅ Send WebSocket update to the post author (BOTH like and unlike)
+    if post.author != request.user:
+        channel_layer = get_channel_layer()
+        
+        notification = None
+        message = None
+        
+        if liked:
+            # ✅ ONLY for like: Create notification + send desktop alert
             notification = Notification.objects.create(
                 user=post.author,
                 sender=request.user,
                 post=post,
                 message=f"{request.user.username} liked your post"
             )
-
-            channel_layer = get_channel_layer()
-
-            async_to_sync(channel_layer.group_send)(
-                f"user_{post.author.id}",
-                {
-                    "type": "send_notification",
-                    "notification_id": notification.id,  # ← MUST HAVE THIS LINE
-                    "message": notification.message,
-                    "post_id": post.id,
-                    "comment_id": None
-                }
-            )
-
-            print(f"✅ Sent like notification with ID: {notification.id}")
+            message = notification.message
+        else:
+            # ✅ For unlike: No notification, just a message for count update
+            message = f"{request.user.username} unliked your post"
+        
+        # ✅ Send WebSocket message with total_likes
+        async_to_sync(channel_layer.group_send)(
+            f"user_{post.author.id}",
+            {
+                "type": "send_notification",
+                "notification_id": notification.id if notification else None,  # ← None for unlike
+                "message": message,
+                "post_id": post.id,
+                "comment_id": None,
+                "total_likes": post.likes.count()  # ← Always send updated count
+            }
+        )
+        
+        print(f"✅ Sent {'like' if liked else 'unlike'} notification for post {post.id}")
 
     return JsonResponse({
         'liked': liked,
@@ -521,7 +536,8 @@ class PostDetailView(DetailView):
                             "notification_id": notification.id,
                             "message": notification.message,
                             "post_id": self.object.id,
-                            "comment_id": comment.id
+                            "comment_id": comment.id,
+                            "total_likes": self.object.likes.count()
                         }
                     )
                 except Exception as e:

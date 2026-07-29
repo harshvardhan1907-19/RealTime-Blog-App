@@ -3,6 +3,50 @@ let currentParams = "";
 let page = 2;
 let hasNext = document.getElementById("hasNext")?.value === "true";
 let scrollTimeout;
+// const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+// const socket = new WebSocket(protocol + window.location.host + "/ws/notifications/");
+// let notif_count = document.getElementById('notif-count');
+
+// socket.onmessage = function (e) {
+//     try {
+//         let data = JSON.parse(e.data);
+//         console.log("📦 Parsed notification:", data);
+//         console.log("🔑 Notification ID:", data.notification_id);
+
+//         // update notificaion bell
+//         if (data.type === "notification" && typeof notif_count !== "undefined") {
+//             let currCount = parseInt(notif_count.innerText) || 0;
+//             notif_count.innerText = currCount + 1;
+//         } else if (data.type === "update_like_count") {
+//             console.log(`📡 Received live like update for Post ${data.post_id}: ${data.new_count}`);
+//             // Find the Like Count span on the page
+//             let countSpan = document.getElementById(`like-count-${data.post_id}`);
+//             let likeBtn = document.getElementById(`like-btn-${data.post_id}`);
+//             if (countSpan) {
+//                 countSpan.innerText = data.new_count;
+//             }
+
+//             if (likeBtn) {
+//                 // Replace the text inside the button. 
+//                 // WARNING: This will wipe out the heart emoji if not careful!
+//                 // Safer approach:
+//                 let heartIcon = likeBtn.innerHTML.includes('❤️') ? '❤️' : '🤍';
+//                 likeBtn.innerHTML = `${heartIcon} <span id="like-count-${data.post_id}">${data.new_count}</span>`;
+//             }
+//         }
+//     } catch (error) {
+//         console.error("❌ Error parsing socket message:", error);
+//     }
+// }
+
+// socket.onopen = function () {
+//     console.log("✅ WebSocket connected for Post List updates");
+// };
+
+// // Handle connection errors
+// socket.onerror = function (e) {
+//     console.log("❌ WebSocket Error in Post List:", e);
+// };
 
 // Sort dropdown handler
 document.getElementById("sort-select")?.addEventListener("change", function() {
@@ -151,6 +195,8 @@ function likePost(postId) {
     .then(data => {
         let btn = document.getElementById(`like-btn-${postId}`);
         let countSpan = document.getElementById(`like-count-${postId}`);
+
+        //  update the UI for the person who clicked
         if (data.liked) {
             btn.innerHTML = `❤️ <span id="like-count-${postId}">${data.total_likes}</span>`;
         } else {
