@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from dotenv.cli import get
+from requests import post
 
 from .models import PasswordResetOTP, Post, Comment, Category, Notification, Profile
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -15,7 +17,6 @@ from .serializer import PostSerializer
 from rest_framework import status, viewsets
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
-from django.core import serializers
 from django.core.paginator import Paginator
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -484,7 +485,7 @@ class PostDetailView(DetailView):
         return context
     
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.object = self.get_object() # Gets the post from database using pk from URL.
 
         # increment view count
         self.object.views += 1
@@ -494,6 +495,10 @@ class PostDetailView(DetailView):
         return self.render_to_response(context)
     
     def dispatch(self, *args, **kwargs):
+        # Purpose: This is the entry point for all requests. It routes to:
+        # get() for GET requests
+        # post() for POST requests
+
         return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
@@ -528,7 +533,7 @@ class PostDetailView(DetailView):
                     message = f"{request.user.username} commented on your post"
                 )
 
-                try:    
+                try:
                     async_to_sync(channel_layer.group_send)(
                         f"user_{self.object.author.id}",
                         {
@@ -647,7 +652,7 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
             if 'image' in form.changed_data:
                 old_post.image.delete(save=False)
 
-        return super().form_valid(form)  
+        return super().form_valid(form)
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

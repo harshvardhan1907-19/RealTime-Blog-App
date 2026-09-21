@@ -29,7 +29,11 @@ class Loginform(AuthenticationForm):
     }
 
     def __init__(self, *args, **kwargs):
+        # args = (request.POST,)
+        # kwargs = {}
         super().__init__(*args, **kwargs)
+        # Calls parent's __init__ with request.POST
+        # Parent sets up: self.fields = {...}
 
         self.fields['username'].label = "Username or Email"
 
@@ -50,10 +54,10 @@ class CustomeUserCreation(UserCreationForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
-
     def clean_email(self):
         # Django automatically calls clean_<fieldname>() methods when validating a form.
         email = self.cleaned_data.get("email") # Using .get() - SAFE (returns None if key doesn't exist)
+        # cleaned_data is a dictionary containing validated and cleaned form data.
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("Email already registered")
         return email
