@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from dotenv.cli import get
+# from dotenv.cli import get
 from requests import post
 
 from .models import PasswordResetOTP, Post, Comment, Category, Notification, Profile
